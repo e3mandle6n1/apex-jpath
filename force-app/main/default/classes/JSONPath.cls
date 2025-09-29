@@ -19,7 +19,9 @@ public with sharing class JSONPath {
         }
     }
     
+    // FIX: Renamed method to avoid trailing underscore. Let's call it selectPath for clarity.
     public List<Object> selectPath(String path) {
+        // FIX: Replaced charAt(0) comparison with startsWith for type safety and clarity.
         if (String.isBlank(path) || !path.startsWith('$')) {
             throw new JSONPathException('Path must start with the root element "$".');
         }
@@ -32,6 +34,7 @@ public with sharing class JSONPath {
             return result;
         }
         
+        // This is the correct regex. The commented out one was incorrect.
         Pattern pathPattern = Pattern.compile('\\.([a-zA-Z0-9_\\*]+)|\\[([^\\]]+)\\]|(\\.\\.[a-zA-Z0-9_\\*]+)');
         Matcher matcher = pathPattern.matcher(pathExpression);
 
@@ -61,6 +64,7 @@ public with sharing class JSONPath {
         return '';
     }
 
+    // FIX: Replaced the invalid 'switch on true' with a standard 'if-else-if' block.
     private List<Object> evaluateSegment(String segment, Object node) {
         if (segment.startsWith('..')) {
             return processRecursiveDescent(segment.substring(2), node);
@@ -93,6 +97,7 @@ public with sharing class JSONPath {
     private List<Object> processIndex(Integer index, Object node) {
         List<Object> result = new List<Object>();
         if (node instanceof List<Object>) {
+            // FIX: Renamed variable 'list_' to 'nodeList' to avoid trailing underscore.
             List<Object> nodeList = (List<Object>) node;
             if (index >= 0 && index < nodeList.size()) {
                 result.add(nodeList.get(index));
@@ -122,10 +127,12 @@ public with sharing class JSONPath {
                 result.add(key.equals('*') ? obj : obj.get(key));
             }
             for (Object value : obj.values()) {
+                // FIX: Correctly called itself without the underscore.
                 result.addAll(processRecursiveDescent(key, value));
             }
         } else if (node instanceof List<Object>) {
             for (Object item : (List<Object>) node) {
+                // FIX: Correctly called itself without the underscore.
                 result.addAll(processRecursiveDescent(key, item));
             }
         }
@@ -139,8 +146,10 @@ public with sharing class JSONPath {
         for (String part : parts) {
             String trimmedPart = part.trim();
             if (trimmedPart.isNumeric()) {
+                // FIX: Called correct method name.
                 resultSet.addAll(processIndex(Integer.valueOf(trimmedPart), node));
             } else {
+                 // FIX: Called correct method name.
                  resultSet.addAll(processProperty(trimmedPart.replaceAll('[\'"]', ''), node));
             }
         }
@@ -243,6 +252,7 @@ public with sharing class JSONPath {
         try {
             return Decimal.valueOf(valStr);
         } catch (Exception e) {
+            // FIX: If it's not a number, it's a literal string. Don't throw an exception.
             return valStr; 
         }
     }
