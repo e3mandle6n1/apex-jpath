@@ -7,7 +7,4 @@
  * 
  */
 public with sharing class JSONPathException extends Exception {
-    public JSONPathException(String message) {
-        super(message);
-    }
 }
