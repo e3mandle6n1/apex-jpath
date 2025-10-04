@@ -1,12 +1,20 @@
 {
   "packageDirectories": [
     {
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
       "path": "force-app",
-      "default": true
+      "default": true,
+      "package": "jpath",
+      "versionDescription": "A native Apex implementation of JSONPath for querying JSON data in Salesforce applications."
     }
   ],
   "name": "apex-jpath",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "64.0"
+  "sourceApiVersion": "64.0",
+  "packageAliases": {
+    "jpath": "0Hod20000000Qk5CAE",
+    "jpath@0.1.0-1": "04td20000007RjRAAU"
+  }
 }
