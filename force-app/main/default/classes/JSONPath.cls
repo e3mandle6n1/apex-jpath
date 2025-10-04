@@ -225,7 +225,8 @@ public with sharing class JSONPath {
             return item.containsKey(key);
         }
 
-        Matcher m = Pattern.compile('@\\.([a-zA-Z0-9_]+)\\s*(==|!=|<|>|<=|>=)\\s*([\\s\\S]+)').matcher(condition);
+        //Matcher m = Pattern.compile('@\\.([a-zA-Z0-9_]+)\\s*(==|!=|<|>|<=|>=)\\s*([\\s\\S]+)').matcher(condition);
+        Matcher m = Pattern.compile('@\\.([a-zA-Z0-9_]+)\\s*(==|!=|<=|>=|<|>)\\s*([\\s\\S]+)').matcher(condition);
         if (!m.matches()) return false;
 
         String key = m.group(1);
