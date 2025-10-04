@@ -1,6 +1,6 @@
 /**
  * @name JSONPathTest
- * @version 1.2
+ * @version 0.1
  * @author Emandleni M
  * @description Test class for a native Apex implementation of JSONPath.
  */
