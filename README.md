@@ -111,6 +111,20 @@ List<Object> result = jp.selectPath('$.items[?(@.price >= 12.99)]');
 | Recursive Descent | `$..property` | Find property at any level |
 | Slice | `$.array[0:2]` | Extract slice of array |
 
+## Limitations and Design Choices
+
+This library is intentionally focused on the most common and essential JSONPath features that are safe and performant on the Salesforce platform. The following advanced features are **not supported**:
+
+*   **Script Expressions (`(...)`):** Executing arbitrary script is a security risk and is disallowed by the Apex runtime. This library does not and will not support `eval()`-style expressions. **Why it's omitted:**
+    - **Security Risk:** Executing arbitrary script expressions is equivalent to `eval()`, which is a massive security vulnerability. It is explicitly disallowed in Apex for this reason.
+    - **Complexity:** Building a safe and efficient expression parser and evaluator from scratch in Apex is a monumental task that would make the library incredibly large and slow.
+*   **Complex Logical Filters (`&&`, `||`):** Support for combining conditions within a single filter is omitted to prevent hitting Salesforce governor limits. For complex queries, it is recommended to chain filters or process results with Apex.
+    *   **Example:** First, query `$.employees[?(@.salary > 50000)]`, then iterate over the results in Apex to apply a second condition.
+*   **JSONPath Functions (`.length()`, `.avg()`):** Standardised JSONPath functions are not implemented to keep the library lightweight and maintainable.
+*   **Root Access in Filters (`$`):** Referencing the root of the JSON document (`$`) from within a filter expression (`@`) is not supported. 
+
+By omitting features that rely on `eval()` or require highly complex, CPU-intensive parsing, the library remains secure and efficient, staying well within governor limits for all reasonable use cases. It provides a massive leap in functionality over parsing JSON manually with `JSON.deserializeUntyped` and nested loops, while avoiding the advanced edge cases that offer diminishing returns for their immense implementation cost and risk.
+
 ## Testing
 
 Run all tests using:
@@ -136,3 +150,4 @@ MIT License
 ## Support
 
 For issues and feature requests, please open an issue on the GitHub repository.
+
