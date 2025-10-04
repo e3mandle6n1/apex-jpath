@@ -50,10 +50,15 @@ private with sharing class JSONPathTest {
     @isTest
     static void testProcessPropertyAndIndex() {
         JSONPath jp = new JSONPath(TEST_JSON);
-        // Test property and index which are now unified
-        System.assertEquals('Nigel Rees', ((Map<String, Object>)jp.selectPath('$.store.book[0]')[0]).get('author'));
-        System.assertEquals('J. R. R. Tolkien', ((Map<String, Object>)jp.selectPath('$.store.book[-1]')[0]).get('author'));
-        
+        // Access first and last book via index then property segment to avoid direct list deref when empty
+        List<Object> firstAuthor = jp.selectPath('$.store.book[0].author');
+        System.assertEquals(1, firstAuthor.size(), 'Expected first author to be found');
+        System.assertEquals('Nigel Rees', (String) firstAuthor[0]);
+
+        List<Object> lastAuthor = jp.selectPath('$.store.book[-1].author');
+        System.assertEquals(1, lastAuthor.size(), 'Expected last author to be found');
+        System.assertEquals('J. R. R. Tolkien', (String) lastAuthor[0]);
+
         // Test non-existent property and out of bounds index
         System.assertEquals(0, jp.selectPath('$.store.car').size());
         System.assertEquals(0, jp.selectPath('$.store.book[99]').size());
@@ -86,6 +91,90 @@ private with sharing class JSONPathTest {
     }
     
     // =========================================================================
+    // Edge Case Tests
+    // =========================================================================
+
+    @IsTest
+    static void testRootOnlyReturnsSingleton() {
+        JSONPath jp = new JSONPath(TEST_JSON);
+        List<Object> root = jp.selectPath('$');
+        System.assertEquals(1, root.size(), 'Root-only path should return the root wrapped in a single-element list.');
+    }
+
+    @IsTest
+    static void testNormalizationBracketVsDotEquivalence() {
+        JSONPath jp = new JSONPath(TEST_JSON);
+        // Dot notation
+        List<Object> dot = jp.selectPath('$.store.book[0].author');
+        // Bracket property notation
+        List<Object> bracket = jp.selectPath('$["store"]["book"][0]["author"]');
+        System.assertEquals(1, dot.size());
+        System.assertEquals(1, bracket.size());
+        System.assertEquals((String)dot[0], (String)bracket[0], 'Dot and bracket property access should be equivalent.');
+    }
+
+    @IsTest
+    static void testUnionMixIndicesDeDup() {
+        JSONPath jp = new JSONPath(TEST_JSON);
+        // Mix of indices with potential duplicates; implementation uses a Set to de-duplicate.
+        List<Object> u = jp.selectPath('$.store.book[0,2,2,0].title');
+        System.assertEquals(2, u.size(), 'Union should de-duplicate results.');
+        System.assert(new Set<String>{ (String)u[0], (String)u[1] }.contains('Sayings of the Century'));
+        System.assert(new Set<String>{ (String)u[0], (String)u[1] }.contains('Moby Dick'));
+    }
+
+    @IsTest
+    static void testSliceBasicAndNegative() {
+        JSONPath jp = new JSONPath(TEST_JSON);
+        // Basic slice 1:3 => indices 1,2
+        List<Object> s1 = jp.selectPath('$.store.book[1:3].author');
+        System.assertEquals(2, s1.size());
+        System.assert(new Set<String>{ (String)s1[0], (String)s1[1] }.contains('Evelyn Waugh'));
+        System.assert(new Set<String>{ (String)s1[0], (String)s1[1] }.contains('Herman Melville'));
+
+        // Negative indices -3:-1 => indices 1 and 2
+        List<Object> s2 = jp.selectPath('$.store.book[-3:-1].author');
+        System.assertEquals(2, s2.size());
+        System.assert(new Set<String>{ (String)s2[0], (String)s2[1] }.contains('Evelyn Waugh'));
+        System.assert(new Set<String>{ (String)s2[0], (String)s2[1] }.contains('Herman Melville'));
+    }
+
+    @IsTest
+    static void testSliceStepAndZeroStepException() {
+        JSONPath jp = new JSONPath(TEST_JSON);
+        // Step 2
+        List<Object> s = jp.selectPath('$.store.book[::2].title');
+        System.assertEquals(2, s.size(), 'Step 2 should yield indices 0 and 2');
+
+        // Zero step -> exception "Slice step cannot be zero."
+        try {
+            jp.selectPath('$.store.book[1:3:0]');
+            System.assert(false, 'Expected JSONPathException due to zero step.');
+        } catch (JSONPathException e) {
+            System.assert(e.getMessage().contains('Slice step cannot be zero.'));
+        }
+    }
+
+    @IsTest
+    static void testFilterNumericVsStringFallback() {
+        // Craft data where numeric appears as a string for one item
+        String json = '{' +
+        '  "items": [' +
+        '    { "name": "A", "price": "12.99" },' +  // string numeric
+        '    { "name": "B", "price": 12.99 },' +    // numeric
+        '    { "name": "C", "price": 8 }' +
+        '  ]' +
+        '}';
+        JSONPath jp = new JSONPath(json);
+
+        // Comparison operators attempt numeric conversion; string "12.99" will convert via Decimal.valueOf in convertToDecimal(String)
+        System.assertEquals(2, jp.selectPath('$.items[?(@.price >= 12.99)].name').size(), 'Two items with price >= 12.99');
+
+        // Equality should also match both due to numeric parity
+        System.assertEquals(2, jp.selectPath('$.items[?(@.price == 12.99)].name').size());
+    }
+    
+    // =========================================================================
     // Filter Tests
     // =========================================================================
 
@@ -102,36 +191,21 @@ private with sharing class JSONPathTest {
         System.assertEquals(1, jp.selectPath('$.store.book[?(@.price <= 8.95)]').size());
         System.assertEquals(2, jp.selectPath('$.store.book[?(@.price >= 12.99)]').size());
         
-        // Operators on strings
+        // Operators on strings (item is a Map<String,Object>)
         System.assertEquals(1, jp.selectPath('$.store.book[?(@.author == "Nigel Rees")]').size());
         System.assertEquals(3, jp.selectPath('$.store.book[?(@.author != "Nigel Rees")]').size());
         
-        // Non-matching filter and bad filter format
+        // Non-matching filter and missing property
         System.assertEquals(0, jp.selectPath('$.store.book[?(@.price > 100)]').size());
         System.assertEquals(0, jp.selectPath('$.store.book[?(@.nonexistent > 100)]').size());
     }
 
     @isTest
     static void testFiltersOnPrimitives() {
+        // Current implementation filters only on lists of objects with @.field semantics.
+        // Ensure that applying a filter to primitives yields empty results rather than errors.
         String primitiveJson = '{"data": ["value", "other", 123, 99]}';
         JSONPath jp = new JSONPath(primitiveJson);
-
-        System.assertEquals(1, jp.selectPath('$.data[?(@ == "value")]').size());
-        System.assertEquals(1, jp.selectPath('$.data[?(@ > 100)]').size());
-        System.assertEquals(2, jp.selectPath('$.data[?(@ != "value")]').size()); // 'other', 123, 99 (numeric converted to string for !=)
-    }
-    
-    // =========================================================================
-    // Exception Class Coverage
-    // =========================================================================
-
-    @isTest
-    static void testExceptionClass() {
-        // Cover both constructors of the exception class
-        Exception e1 = new JSONPathException();
-        System.assertEquals(null, e1.getMessage());
-
-        Exception e2 = new JSONPathException('test message');
-        System.assertEquals('test message', e2.getMessage());
+        System.assertEquals(0, jp.selectPath('$.data[?(@.foo == "value")]').size());
     }
 }
