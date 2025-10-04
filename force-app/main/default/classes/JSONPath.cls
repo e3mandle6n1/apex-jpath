@@ -32,7 +32,9 @@ public with sharing class JSONPath {
             return result;
         }
 
-        Pattern pathPattern = Pattern.compile('\\.([a-zA-Z0-9_\\*]+)|\\[([^\\]]+)\\]|(\\.\\.[a-zA-Z0-9_\\*]+)');
+        // Order matters: match recursive descent '..key' first, then bracket segments, then dot segments.
+        // Also allow '-' in bracket indices (e.g., [-1]).
+        Pattern pathPattern = Pattern.compile('(\\.\\.[a-zA-Z0-9_\\*]+)|\\[([^\\]]+)\\]|\\.([a-zA-Z0-9_\\*]+)');
         Matcher matcher = pathPattern.matcher(pathExpression);
 
         while (matcher.find() && !result.isEmpty()) {
@@ -49,15 +51,18 @@ public with sharing class JSONPath {
     }
 
     private String normalizePath(String path) {
-        return path.replaceAll('\\[\'([a-zA-Z0-9_]+)\'\\]', '.$1').replaceAll('\\["([a-zA-Z0-9_]+)"\\]', '.$1');
+        return path
+            .replaceAll('\\[\'([a-zA-Z0-9_]+)\'\\]', '.$1')
+            .replaceAll('\\["([a-zA-Z0-9_]+)"\\]', '.$1')
+            // Keep negative indices inside brackets intact by not normalizing numeric brackets.
+            ;
     }
 
     private String getMatch(Matcher matcher) {
-        for (Integer i = 1; i <= matcher.groupCount(); i++) {
-            if (matcher.group(i) != null) {
-                return matcher.group(i);
-            }
-        }
+        // With the updated regex, group(1) = recursive '..key', group(2) = bracket content, group(3) = dot key.
+        if (matcher.group(1) != null) return matcher.group(1);
+        if (matcher.group(2) != null) return matcher.group(2);
+        if (matcher.group(3) != null) return matcher.group(3);
         return '';
     }
 
@@ -72,11 +77,17 @@ public with sharing class JSONPath {
             return processSlice(segment, node);
         } else if (segment.contains(',')) {
             return processUnion(segment, node);
-        } else if (segment.isNumeric()) {
+        } else if (segment.isNumeric() || isSignedInteger(segment)) {
             return processIndex(Integer.valueOf(segment), node);
         } else {
             return processProperty(segment, node);
         }
+    }
+
+    // Detect signed integer strings like "-1"
+    private Boolean isSignedInteger(String s) {
+        if (String.isBlank(s)) return false;
+        return Pattern.matches('^-?\\d+$', s);
     }
 
     private List<Object> processProperty(String key, Object node) {
@@ -178,11 +189,19 @@ public with sharing class JSONPath {
 
     private List<Object> processFilter(String segment, Object node) {
         List<Object> result = new List<Object>();
-        if (!(node instanceof List<Object>)) return result;
+        // Support filtering on a single object by treating it as a 1-element list.
+        List<Object> iterable = new List<Object>();
+        if (node instanceof List<Object>) {
+            iterable = (List<Object>) node;
+        } else if (node instanceof Map<String, Object>) {
+            iterable.add(node);
+        } else {
+            return result;
+        }
 
         String filter = segment.substring(2, segment.length() - 1);
 
-        for (Object item : (List<Object>) node) {
+        for (Object item : iterable) {
             if (item instanceof Map<String, Object> && evaluateFilterCondition(filter, (Map<String, Object>)item)) {
                 result.add(item);
             }
@@ -190,13 +209,24 @@ public with sharing class JSONPath {
         return result;
     }
 
+    // Attempt to coerce to Decimal; return null if not possible (no exception).
+    private Decimal tryToDecimal(Object val) {
+        if (val == null) return null;
+        try {
+            return convertToDecimal(val);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private Boolean evaluateFilterCondition(String condition, Map<String, Object> item) {
         if (!condition.contains('<') && !condition.contains('>') && !condition.contains('==') && !condition.contains('!=')) {
-             String key = condition.replace('@.', '');
-             return item.containsKey(key);
+            String key = condition.replace('@.', '');
+            return item.containsKey(key);
         }
-        
-        Matcher m = Pattern.compile('@\\.([a-zA-Z0-9_]+)\\s*(==|!=|<|>|<=|>=)\\s*([\\s\\S]+)').matcher(condition);
+
+        //Matcher m = Pattern.compile('@\\.([a-zA-Z0-9_]+)\\s*(==|!=|<|>|<=|>=)\\s*([\\s\\S]+)').matcher(condition);
+        Matcher m = Pattern.compile('@\\.([a-zA-Z0-9_]+)\\s*(==|!=|<=|>=|<|>)\\s*([\\s\\S]+)').matcher(condition);
         if (!m.matches()) return false;
 
         String key = m.group(1);
@@ -210,23 +240,31 @@ public with sharing class JSONPath {
 
         if (itemValue == null || filterValue == null) return false;
 
-        try {
-            Decimal itemDecimal = convertToDecimal(itemValue);
-            Decimal filterDecimal = convertToDecimal(filterValue);
+        // Try numeric comparison first, when both sides are numeric-coercible.
+        Decimal leftNum = tryToDecimal(itemValue);
+        Decimal rightNum = tryToDecimal(filterValue);
 
-            if (op == '==') return itemDecimal == filterDecimal;
-            if (op == '!=') return itemDecimal != filterDecimal;
-            if (op == '<') return itemDecimal < filterDecimal;
-            if (op == '>') return itemDecimal > filterDecimal;
-            if (op == '<=') return itemDecimal <= filterDecimal;
-            if (op == '>=') return itemDecimal >= filterDecimal;
+        // Relational operators require numeric comparison; if either side is non-numeric, return false.
+        if (op == '<' || op == '>' || op == '<=' || op == '>=') {
+            if (leftNum == null || rightNum == null) return false;
+            if (op == '<') return leftNum < rightNum;
+            if (op == '>') return leftNum > rightNum;
+            if (op == '<=') return leftNum <= rightNum;
+            if (op == '>=') return leftNum >= rightNum;
+            return false;
+        }
 
-        } catch(Exception e) {
-            String itemString = String.valueOf(itemValue);
-            String filterString = String.valueOf(filterValue);
-
-            if (op == '==') return itemString.equals(filterString);
-            if (op == '!=') return !itemString.equals(filterString);
+        // Equality/inequality: if both numeric, compare numerically; else fallback to string equality.
+        if (op == '==' || op == '!=') {
+            Boolean eq;
+            if (leftNum != null && rightNum != null) {
+                eq = (leftNum == rightNum);
+            } else {
+                String ls = String.valueOf(itemValue);
+                String rs = String.valueOf(filterValue);
+                eq = ls == rs;
+            }
+            return (op == '==') ? eq : !eq;
         }
 
         return false;
@@ -247,16 +285,18 @@ public with sharing class JSONPath {
     }
 
     private Decimal convertToDecimal(Object val) {
-        if (val instanceof Decimal || val instanceof Double || val instanceof Integer) {
+        if (val == null) throw new JSONPathException('Cannot compare null value.');
+        if (val instanceof Decimal) {
             return (Decimal) val;
         }
-        if (val instanceof String) {
-            try {
-                return Decimal.valueOf((String)val);
-            } catch (Exception e) {
-                throw new JSONPathException('Cannot convert string to number for comparison: ' + val);
-            }
+        if (val instanceof Double || val instanceof Integer || val instanceof Long) {
+            // Safe conversion route: go through String to avoid ClassCastException
+            return Decimal.valueOf(String.valueOf(val));
         }
-        throw new JSONPathException('Cannot compare non-numeric value: ' + val);
+        if (val instanceof String) {
+            String s = ((String) val).trim();
+            return Decimal.valueOf(s);
+        }
+        throw new JSONPathException('Cannot compare non-numeric value: ' + String.valueOf(val));
     }
 }
