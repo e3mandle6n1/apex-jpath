@@ -1,6 +1,6 @@
 /**
  * @name JSONPathExceptionTest
- * @version 1.2
+ * @version 0.1
  * @author Emandleni M
  * @description Custom exception test class for JSONPath processing errors. Tests if appropriate errors are thrown when the JSON string is invalid or the JSONPath expression is malformed.
  */
