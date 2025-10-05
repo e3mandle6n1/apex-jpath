@@ -155,7 +155,8 @@ MIT License
 
 ## Support
 
-For issues and feature requests, please open an issue on the GitHub repository.
+Questions and feature requests? Please use the [Discussions tab](https://github.com/e3mandle6n1/apex-jpath/discussions). For bugs, open an issue.
+
 
 
 
