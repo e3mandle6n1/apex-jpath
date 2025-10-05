@@ -2,6 +2,12 @@
 
 A native Apex implementation of JSONPath for querying JSON data in Salesforce applications.
 
+[![Salesforce Platform](https://img.shields.io/badge/platform-Salesforce%20Winter%20'26-blue.svg?logo=salesforce&logoColor=white)](https://www.salesforce.com/platform/)
+[![Apex](https://img.shields.io/badge/Apex-v64.0-blue.svg?logo=salesforce&logoColor=white)](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/)
+[![Salesforce DX](https://img.shields.io/badge/CLI-SFDX%20v2.108.6-blue.svg?logo=salesforce&logoColor=white)](https://developer.salesforce.com/tools/sfdxcli)
+[![JSON](https://img.shields.io/badge/JSON-000?logo=json&logoColor=fff)](#)
+[![Node.js](https://img.shields.io/badge/Node.js-6DA55F?logo=node.js&logoColor=white)](#)
+
 ## Overview
 
 This library provides JSONPath functionality directly within Apex, allowing developers to query and filter JSON data using familiar JSONPath expressions. It's designed specifically for Salesforce environments and supports common JSONPath operations including:
@@ -12,15 +18,6 @@ This library provides JSONPath functionality directly within Apex, allowing deve
 -   Filter expressions (`[?(@.property > 10)]`)
 -   Recursive descent (`..property`)
 -   Slice operations (`[0:2]`)
-
-## Features
-
--   **Native Apex Implementation**: Pure Apex code with no external dependencies
--   **Full JSONPath Support**: Implements core JSONPath specification with Salesforce-specific enhancements
--   **Type Safety**: Robust type handling with automatic conversion between numeric types
--   **Filter Expressions**: Complex filtering with comparison operators and logical conditions
--   **Error Handling**: Comprehensive exception handling with descriptive error messages
--   **Performance Optimized**: Efficient parsing and evaluation of JSONPath expressions
 
 ## Installation
 
@@ -41,6 +38,15 @@ Install this package using the following URL in your Salesforce sandbox org:
     ```bash
     sf force:source:deploy -p force-app
     ```
+
+## Features
+
+-   **Native Apex Implementation**: Pure Apex code with no external dependencies
+-   **Full JSONPath Support**: Implements core JSONPath specification with Salesforce-specific enhancements
+-   **Type Safety**: Robust type handling with automatic conversion between numeric types
+-   **Filter Expressions**: Complex filtering with comparison operators and logical conditions
+-   **Error Handling**: Comprehensive exception handling with descriptive error messages
+-   **Performance Optimized**: Efficient parsing and evaluation of JSONPath expressions
 
 ## Usage Examples
 
@@ -150,4 +156,5 @@ MIT License
 ## Support
 
 For issues and feature requests, please open an issue on the GitHub repository.
+
 
