@@ -84,7 +84,7 @@ public with sharing class JSONPath {
         }
     }
 
-    // Detect signed integer strings like "-1"
+    // Detect signed integer strings like "0" or "-1"
     private Boolean isSignedInteger(String s) {
         if (String.isBlank(s)) return false;
         return Pattern.matches('^-?\\d+$', s);
