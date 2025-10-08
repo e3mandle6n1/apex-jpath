@@ -10,6 +10,40 @@ The apex-jpath library simplifies this by providing a concise, expressive way to
 [![JSON](https://img.shields.io/badge/JSON-000?logo=json&logoColor=fff)](#)
 [![Node.js](https://img.shields.io/badge/Node.js-6DA55F?logo=node.js&logoColor=white)](#)
 
+## Table of Contents
+* [Overview](#overview)
+* [Installation](#installation)
+    * [Unlocked Package Installation](#unlocked-package-installation)
+    * [Developer Installation](#developer-installation)
+* [Features](#features)
+* [Usage Examples](#usage-examples)
+    * [Basic Property Access](#basic-property-access)
+    * [Array Indexing](#array-indexing)
+    * [Filtering](#filtering)
+    * [Numeric Comparisons with String Values](#numeric-comparisons-with-string-values)
+* [More Usage Examples](#more-usage-examples)
+    * [Sample JSON](#sample-json)
+    * [Basic Usage](#basic-usage)
+        * [1. Accessing a Top-Level Property](#1-accessing-a-top-level-property)
+        * [2. Accessing a Nested Property](#2-accessing-a-nested-property)
+        * [3. Accessing an Element in an Array by Index](#3-accessing-an-element-in-an-array-by-index)
+        * [4. Accessing a Specific Property of an Array Element](#4-accessing-a-specific-property-of-an-array-element)
+    * [Intermediate Usage](#intermediate-usage)
+        * [5. Getting a List of a Specific Property from an Array of Objects](#5-getting-a-list-of-a-specific-property-from-an-array-of-objects)
+        * [6. Retrieving an Entire Array](#6-retrieving-an-entire-array)
+    * [Advanced Usage](#advanced-usage)
+        * [7. Filtering an Array to Find an Object by a Property Value](#7-filtering-an-array-to-find-an-object-by-a-property-value)
+        * [8. Filtering to Get a Property of a Matching Object](#8-filtering-to-get-a-property-of-a-matching-object)
+        * [9. Filtering Based on a Boolean Property](#9-filtering-based-on-a-boolean-property)
+        * [10. Filtering Based on "Greater Than" or "Less Than"](#10-filtering-based-on-greater-than-or-less-than)
+* [How?](#how)
+* [Supported Operations](#supported-operations)
+* [Limitations and Design Choices](#limitations-and-design-choices)
+* [Testing](#testing)
+* [License](#license)
+* [Contributing](#contributing)
+* [Support](#support)
+
 ## Overview
 
 This library provides JSONPath functionality directly within Apex, allowing developers to query and filter JSON data using familiar JSONPath expressions. It's designed specifically for Salesforce environments and supports common JSONPath operations including:
@@ -387,6 +421,7 @@ MIT License
 ## Support
 
 Questions and feature requests? Please use the [Discussions tab](https://github.com/e3mandle6n1/apex-jpath/discussions). For bugs, open an issue.
+
 
 
 
