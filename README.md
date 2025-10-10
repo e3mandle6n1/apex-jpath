@@ -85,7 +85,10 @@ Install this package using the following URL in your Salesforce sandbox org:
 -   **Performance Optimized**: Efficient parsing and evaluation of JSONPath expressions
 
 ## Usage Examples
-
+> **Quick Testing:**  
+> For rapid hands-on evaluation, see the attached example files (`examples/example1.txt` and `examples/example2.txt`).  
+> These contain ready-to-copy Apex code blocks for Execute Anonymous windows, allowing you to quickly test JSONPath queries and verify library functionality in your Salesforce org.  
+> **Important:** Run each test block individually to avoid hitting governor limits (see comments in the files for details).
 ### Basic Property Access
 
 ```apex
@@ -421,6 +424,7 @@ MIT License
 ## Support
 
 Questions and feature requests? Please use the [Discussions tab](https://github.com/e3mandle6n1/apex-jpath/discussions). For bugs, open an issue.
+
 
 
 
