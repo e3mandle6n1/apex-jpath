@@ -1,0 +1,189 @@
+/*
+ *
+ * This file outlines the correct protocol for testing JSONPath queries
+ * in an Execute Anonymous window to test for correctness and avoid hitting Salesforce Governor Limits.
+ *
+ * =======================================================================
+ * TOPIC: JSONPath, JPath Querying, Apex CPU Time, Heap Size, and Debug Log Limits
+ * =======================================================================
+ *
+ * ⚠️ WARNING: APEX GOVERNOR LIMITS ⚠️
+ * The Problem:
+ * When running multiple or complex JSONPath queries within a single Execute Anonymous
+ * block, the act of serializing the results (JSON.serialize()) and writing them to the
+ * log buffer (System.debug()) can quickly exhaust Governor Limits. Even when other queries are
+ * commented out. The Execute Anonymous takes as input your ENTIRE anonymous class including comments.
+ *
+ * Specifically:
+ * 1. CPU Time Limit (10,000ms): Serializing a large object is computationally expensive.
+ * 2. Debug Log Size Limit (20MB): Generating massive log entries fills the buffer quickly.
+ *
+ * The Symptom:
+ * You may encounter non-specific errors indicating a *logging* or *serialization* issue,
+ * NOT necessarily a bug in the JSONPath query itself:
+ * - HTTP ERROR 431 Request Header Fields Too Large
+ * - System.LimitException: Apex CPU time limit exceeded
+ * - Apex heap size too large
+ *
+ * =======================================================================
+ * DEVELOPER PROTOCOL: RUNNING ISOLATED TESTS
+ * =======================================================================
+ * 🚨 DO NOT run multiple tests in the same Execute Anonymous window. 🚨
+ * You MUST run each query test individually to ensure isolation.
+ */
+
+// =======================================================================
+// STEP 1: SET UP THE JSON PAYLOAD AND JSONPATH INSTANCE (Copy for every test)
+// YOU CAN PROVIDE THE JSON PAYLOAD ESCAPED/ UNESCAPED. 
+// JPATH IS LIKE A BARBER IT TAKES CARE OF YOUR TRIM.
+// =======================================================================
+
+String universityPayload = '{' +
+    '"university": {' +
+        '"name": "Nelson Mandela University",' +
+        '"established": 2005,' +
+        '"ranking": 5,' +
+        '"campuses": [' +
+            '{' +
+                '"name": "North Campus",' +
+                '"location": "Port Elizabeth, Eastern Cape",' +
+                '"schools": [' +
+                    '{' +
+                        '"id": "ENG",' +
+                        '"name": "Faculty of Engineering",' +
+                        '"dean": {"firstName": "Prof. Siza", "lastName": "Dlamini", "tenureYears": 8},' +
+                        '"courses": [' +
+                            '{"code": "CIV101", "title": "Intro to Civil Design", "credits": 3, "prerequisites": []},' +
+                            '{"code": "MEC450", "title": "Advanced Fluid Dynamics", "credits": 4, "prerequisites": ["MATH301", "PHY201"]}' +
+                        '],' +
+                        '"facultyCount": 60' +
+                    '},' +
+                    '{' +
+                        '"id": "SCI",' +
+                        '"name": "Faculty of Science",' +
+                        '"dean": {"firstName": "Dr. Thandi", "lastName": "Petersen", "tenureYears": 5},' +
+                        '"courses": [' +
+                            '{"code": "BIO205", "title": "Marine Conservation", "credits": 3, "prerequisites": ["ZOO101"]}' +
+                        '],' +
+                        '"facultyCount": 40' +
+                    '}' +
+                '],' +
+                '"studentCount": 16000' +
+            '},' +
+            '{' +
+                '"name": "South Campus",' +
+                '"location": "Port Elizabeth, Eastern Cape",' +
+                '"schools": [' +
+                    '{' +
+                        '"id": "BIZ",' +
+                        '"name": "Business School",' +
+                        '"dean": {"firstName": "Mr. Leon", "lastName": "Van Wyk", "tenureYears": 12},' +
+                        '"courses": [' +
+                            '{"code": "ACC300", "title": "Forensic Accounting", "credits": 3, "prerequisites": ["ACC201"]}' +
+                        '],' +
+                        '"facultyCount": 55' +
+                    '}' +
+                '],' +
+                '"studentCount": 14000' +
+            '},' +
+            '{' +
+                '"name": "George Campus",' +
+                '"location": "George, Western Cape",' +
+                '"schools": [' +
+                    '{' +
+                        '"id": "FOR",' +
+                        '"name": "School of Forestry",' +
+                        '"dean": {"firstName": "Prof. Lin", "lastName": "Wei", "tenureYears": 3},' +
+                        '"courses": [' +
+                            '{"code": "FRY100", "title": "Intro to Forest Ecology", "credits": 3, "prerequisites": []}' +
+                        '],' +
+                        '"facultyCount": 25' +
+                    '}' +
+                '],' +
+                '"studentCount": 5000' +
+            '}' +
+        '],' +
+        '"metrics": {' +
+            '"yearlyEnrollment": [35000, 36000, 37000],' +
+            '"budgetByQuarter": {"Q1": 20000000, "Q2": 21000000, "Q3": 22000000, "Q4": 23000000}' +
+        '},' +
+        '"accreditationStatus": "Fully Accredited"' +
+    '}' +
+'}';
+
+JSONPath jpUniversity = new JSONPath(universityPayload);
+
+// =======================================================================
+// STEP 2: RUN ISOLATED EXAMPLES (Copy only ONE TEST block below at a time)
+// =======================================================================
+
+
+// === TEST 1: Negative Array Indexing ($.university.campuses[-1].name) ===
+// Selects the name of the last campus (George Campus).
+List<Object> lastCampusName = jpUniversity.selectPath('$.university.campuses[-1].name');
+System.debug('Last Campus Name: ' + JSON.serialize(lastCampusName));
+// Expected: ["George Campus"]
+
+
+// === TEST 2: Array Slicing with Range ($.university.campuses[0:2].name) ===
+// Gets the name of the first two campuses (North and South).
+List<Object> firstTwoCampusNames = jpUniversity.selectPath('$.university.campuses[0:2].name');
+System.debug('First Two Campus Names: ' + JSON.serialize(firstTwoCampusNames));
+// Expected: ["North Campus", "South Campus"]
+
+
+// === TEST 3: Nested Wildcard on Array ($.university.campuses[0].schools[0].courses[*].title) ===
+// Selects all course titles from the first school (Engineering) in the first campus (North).
+List<Object> engCourseTitles = jpUniversity.selectPath('$.university.campuses[0].schools[0].courses[*].title');
+System.debug('Engineering Course Titles: ' + JSON.serialize(engCourseTitles));
+// Expected: ["Intro to Civil Design", "Advanced Fluid Dynamics"]
+
+
+// === TEST 4: Recursive Descent ($..lastName) ===
+// Finds all 'lastName' values for the Deans across all schools.
+List<Object> allLastNames = jpUniversity.selectPath('$..lastName');
+System.debug('All Last Names (Deans): ' + JSON.serialize(allLastNames));
+// Expected: ["Dlamini", "Petersen", "Van Wyk", "Wei"]
+
+
+// === TEST 5: Filter (Greater Than: $.university.campuses[?(@.studentCount > 10000)].name) ===
+// Selects campuses with more than 10,000 students.
+List<Object> largeCampuses = jpUniversity.selectPath('$.university.campuses[?(@.studentCount > 10000)].name');
+System.debug('Large Campuses (Names): ' + JSON.serialize(largeCampuses));
+// Expected: ["North Campus", "South Campus"]
+
+
+// === TEST 6: Filter (Less Than or Equal: $.university.campuses[*].schools[?(@.facultyCount <= 30)].name) ===
+// Selects schools across all campuses with a faculty count of 30 or fewer.
+List<Object> smallSchools = jpUniversity.selectPath('$.university.campuses[*].schools[?(@.facultyCount <= 30)].name');
+System.debug('Small Schools (Names): ' + JSON.serialize(smallSchools));
+// Expected: ["School of Forestry"]
+
+
+// === TEST 7: Filter (Array Existence: $..courses[?(@.prerequisites[0])].title) ===
+// Finds the titles of all courses that require at least one prerequisite.
+List<Object> coursesWithPrereqs = jpUniversity.selectPath('$..courses[?(@.prerequisites[0])].title');
+System.debug('Courses With Prerequisites: ' + JSON.serialize(coursesWithPrereqs));
+// Expected: ["Advanced Fluid Dynamics", "Marine Conservation", "Forensic Accounting"]
+
+
+// === TEST 8: Union using Filter ($.university.campuses[0].schools[?(@.id == "ENG" || @.id == "SCI")].name) ===
+// NOTE: Query IDs (ENG, SCI) updated to match the NMU North Campus faculties.
+// Selects the names of the Engineering and Science faculties in the North Campus.
+List<Object> engAndSciSchoolNames = jpUniversity.selectPath('$.university.campuses[0].schools[?(@.id == "ENG" || @.id == "SCI")].name');
+System.debug('ENG and SCI School Names (Filter Union): ' + JSON.serialize(engAndSciSchoolNames));
+// Expected: ["Faculty of Engineering", "Faculty of Science"]
+
+
+// === TEST 9: Union on Object Keys ($.university.metrics.budgetByQuarter["Q1", "Q3"]) ===
+// Gets the budget values for Q1 and Q3.
+List<Object> q1AndQ3Budget = jpUniversity.selectPath('$.university.metrics.budgetByQuarter["Q1", "Q3"]');
+System.debug('Q1 and Q3 Budget: ' + JSON.serialize(q1AndQ3Budget));
+// Expected: [20000000, 22000000]
+
+
+// === TEST 10: Negative Array Slicing ($.university.campuses[0].schools[0].courses[-2:].title) ===
+// Gets the 'title' of the last two courses in the first school (Engineering) of the first campus (North).
+List<Object> lastTwoEngCourseTitles = jpUniversity.selectPath('$.university.campuses[0].schools[0].courses[-2:].title');
+System.debug('Last Two Eng Course Titles: ' + JSON.serialize(lastTwoEngCourseTitles));
+// Expected: ["Intro to Civil Design", "Advanced Fluid Dynamics"]
