@@ -12,7 +12,7 @@
  * When running multiple or complex JSONPath queries within a single Execute Anonymous
  * block, the act of serializing the results (JSON.serialize()) and writing them to the
  * log buffer (System.debug()) can quickly exhaust Governor Limits. Even when other queries are
- * commented out. The Execute Anonymous takes as input your ENTIRE anonymous class including comments.
+ * commented out. The Execute Anonymous window takes as input your ENTIRE anonymous class contents including comments.
  *
  * Specifically:
  * 1. CPU Time Limit (10,000ms): Serializing a large object is computationally expensive.
