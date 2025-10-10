@@ -13,7 +13,8 @@ public with sharing class JSONPath {
             throw new JSONPathException('JSON string cannot be null or empty.');
         }
         try {
-            this.root = JSON.deserializeUntyped(jsonString);
+            String jsonStringTrimmed = convertToSingleLine(jsonString);
+            this.root = JSON.deserializeUntyped(jsonStringTrimmed);
         } catch (Exception e) {
             throw new JSONPathException('Failed to parse JSON string. Error: ' + e.getMessage());
         }
@@ -49,7 +50,19 @@ public with sharing class JSONPath {
 
         return result;
     }
+	
+    private String convertToSingleLine(String multiLineString) {
+        if (multiLineString == null) {
+            return null;
+        }
 
+        // Replace with an empty string to completely remove newlines
+        String singleLineString = multiLineString.replaceAll('\\n', '').replaceAll('\\r', '');
+
+        // Trim leading/trailing spaces
+        return singleLineString.trim();
+    }
+    
     private String normalizePath(String path) {
         return path
             .replaceAll('\\[\'([a-zA-Z0-9_]+)\'\\]', '.$1')
@@ -84,7 +97,7 @@ public with sharing class JSONPath {
         }
     }
 
-    // Detect signed integer strings like "0" or "-1"
+    // Detect signed integer strings like "-1"
     private Boolean isSignedInteger(String s) {
         if (String.isBlank(s)) return false;
         return Pattern.matches('^-?\\d+$', s);
@@ -262,7 +275,8 @@ public with sharing class JSONPath {
             } else {
                 String ls = String.valueOf(itemValue);
                 String rs = String.valueOf(filterValue);
-                eq = ls == rs;
+                //eq = ls == rs;
+                eq = ls.equals(rs);
             }
             return (op == '==') ? eq : !eq;
         }
