@@ -1,6 +1,6 @@
 /**
  * @name JSONPath
- * @version 0.1
+ * @version 0.2
  * @author Emandleni M
  * @description A native Apex implementation of JSONPath for querying JSON data.
  */
