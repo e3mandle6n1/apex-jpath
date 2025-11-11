@@ -314,6 +314,16 @@
 
       let currentMatchIndex = -1;
       let matchedNodes = [];
+      const STORAGE_KEY = "jsonPathFinder_lastInput";
+
+      // Load saved JSON from localStorage on page load
+      window.addEventListener("DOMContentLoaded", () => {
+        const savedJson = localStorage.getItem(STORAGE_KEY);
+        if (savedJson) {
+          jsonInput.value = savedJson;
+          updateJsonView(false);
+        }
+      });
 
       function updateJsonView(showError = true) {
         try {
@@ -342,6 +352,8 @@
       });
 
       jsonInput.addEventListener("keyup", () => {
+        // Save to localStorage whenever input changes
+        localStorage.setItem(STORAGE_KEY, jsonInput.value);
         updateJsonView();
       });
 
