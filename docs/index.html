@@ -8,8 +8,8 @@
     <style>
       body {
         font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-          Arial, sans-serif;
+          "Fira Sans", "Helvetica Neue", "Apple SD Gothic Neo", "Malgun Gothic",
+          "Segoe UI", sans-serif;
         background-color: #000;
         color: #fff;
         margin: 0;
@@ -83,8 +83,8 @@
         padding: 10px 70px 10px 10px;
         box-sizing: border-box;
         font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-          Arial, sans-serif;
+          "Fira Sans", "Helvetica Neue", "Apple SD Gothic Neo", "Malgun Gothic",
+          "Segoe UI", sans-serif;
         font-size: 14px;
       }
 
@@ -141,10 +141,67 @@
         box-sizing: border-box;
         resize: none;
         font-family: "Courier New", Courier, monospace;
+        line-height: 1.5;
+      }
+
+      #json-input.error {
+        border-color: #f00;
+      }
+
+      .error-message {
+        background-color: #2a0a0a;
+        border: 1px solid #f00;
+        border-radius: 5px;
+        padding: 15px;
+        margin-top: 10px;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 13px;
+      }
+
+      .error-title {
+        color: #f00;
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 14px;
+      }
+
+      .error-details {
+        color: #ff6b6b;
+        margin-bottom: 8px;
+        line-height: 1.6;
+      }
+
+      .error-position {
+        color: #ffa500;
+        font-weight: bold;
+      }
+
+      .error-hint {
+        background-color: #1a1a0a;
+        border-left: 3px solid #ffa500;
+        padding: 8px 10px;
+        margin-top: 10px;
+        color: #ffeb3b;
+        font-size: 12px;
+      }
+
+      .error-hint-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .error-hint ul {
+        margin: 5px 0 0 0;
+        padding-left: 20px;
+      }
+
+      .error-hint li {
+        margin: 3px 0;
       }
 
       #json-tree {
         padding-left: 20px;
+        font-family: "Courier New", Courier, monospace;
       }
 
       .node {
@@ -325,29 +382,154 @@
         }
       });
 
+      /**
+       * Updates the JSON tree view by parsing the input and rendering the hierarchical structure.
+       * Clears error styling on successful parse, adds error styling and message on failure.
+       * @param {boolean} showError - Whether to display error messages in the UI (default: true)
+       */
       function updateJsonView(showError = true) {
         try {
           const json = JSON.parse(jsonInput.value);
           jsonTree.innerHTML = createTreeView(json, "$");
           addEventListeners();
           filterNodes(searchInput.value);
+          // Clear error styling if parse succeeds
+          jsonInput.classList.remove("error");
         } catch (e) {
+          jsonInput.classList.add("error");
           if (showError) {
-            jsonTree.innerHTML =
-              '<span style="color: red;">Invalid JSON</span>';
+            jsonTree.innerHTML = createErrorMessage(e, jsonInput.value);
           }
         }
+      }
+
+      /**
+       * Creates a formatted HTML error message with detailed information about JSON parsing errors.
+       * Extracts line and column numbers from the error and provides contextual hints for fixing common issues.
+       * @param {Error} error - The error object thrown by JSON.parse()
+       * @param {string} jsonText - The raw JSON text that failed to parse
+       * @returns {string} HTML string containing the formatted error message
+       */
+      function createErrorMessage(error, jsonText) {
+        const errorMsg = error.message;
+        let lineNumber = null;
+        let columnNumber = null;
+
+        // Try to extract position from error message
+        const positionMatch = errorMsg.match(/position (\d+)/i);
+        if (positionMatch) {
+          const position = parseInt(positionMatch[1]);
+          const lines = jsonText.substring(0, position).split("\n");
+          lineNumber = lines.length;
+          columnNumber = lines[lines.length - 1].length + 1;
+        }
+
+        // Common JSON error hints
+        const hints = getErrorHints(errorMsg);
+
+        let html = '<div class="error-message">';
+        html += '<div class="error-title">❌ JSON Parse Error</div>';
+        html += `<div class="error-details"><strong>Message:</strong> ${escapeHtml(errorMsg)}</div>`;
+
+        if (lineNumber && columnNumber) {
+          html += `<div class="error-details"><span class="error-position">📍 Location:</span> Line ${lineNumber}, Column ${columnNumber}</div>`;
+          highlightErrorLine(lineNumber);
+        }
+
+        if (hints.length > 0) {
+          html += '<div class="error-hint">';
+          html += '<div class="error-hint-title">💡 Common fixes:</div>';
+          html += "<ul>";
+          hints.forEach((hint) => {
+            html += `<li>${escapeHtml(hint)}</li>`;
+          });
+          html += "</ul>";
+          html += "</div>";
+        }
+
+        html += "</div>";
+        return html;
+      }
+
+      /**
+       * Analyses a JSON parsing error message and returns an array of helpful hints for fixing the issue.
+       * Provides context-specific suggestions based on the type of error encountered.
+       * @param {string} errorMsg - The error message from JSON.parse()
+       * @returns {string[]} Array of hint strings to help users fix the JSON syntax error
+       */
+      function getErrorHints(errorMsg) {
+        const hints = [];
+        const lowerMsg = errorMsg.toLowerCase();
+
+        if (
+          lowerMsg.includes("unexpected token") ||
+          lowerMsg.includes("unexpected string")
+        ) {
+          hints.push("Check for missing commas between properties");
+          hints.push("Ensure all property names are in double quotes");
+          hints.push("Look for trailing commas (not allowed in JSON)");
+        }
+
+        if (lowerMsg.includes("unexpected end")) {
+          hints.push("Check for unclosed braces { } or brackets [ ]");
+          hints.push(
+            "Verify all strings are properly closed with double quotes"
+          );
+        }
+
+        if (lowerMsg.includes("'")) {
+          hints.push("Use double quotes (\") instead of single quotes (')");
+        }
+
+        if (lowerMsg.includes("token")) {
+          hints.push("Remove any comments (JSON doesn't support comments)");
+          hints.push("Check for special characters that need escaping");
+        }
+
+        // Generic helpful hints
+        hints.push("Try using an online JSON validator for complex errors");
+        hints.push("Use the Format button once JSON is valid to beautify it");
+
+        return hints;
+      }
+
+      /**
+       * Scrolls the JSON input textarea to highlight the line where a parsing error occurred.
+       * @param {number} lineNumber - The line number (1-indexed) where the error was detected
+       */
+      function highlightErrorLine(lineNumber) {
+        const lines = jsonInput.value.split("\n");
+        const lineHeight = 1.5; // matches CSS line-height
+        const fontSize = 13; // approximate font size
+        const scrollPosition = (lineNumber - 1) * (fontSize * lineHeight);
+
+        // Scroll to the error line
+        setTimeout(() => {
+          jsonInput.scrollTop = scrollPosition - 50;
+        }, 100);
+      }
+
+      /**
+       * Escapes HTML special characters in text to prevent XSS and ensure proper rendering.
+       * @param {string} text - The text to escape
+       * @returns {string} HTML-safe escaped text
+       */
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
       }
 
       formatJsonBtn.addEventListener("click", () => {
         try {
           const json = JSON.parse(jsonInput.value);
           jsonInput.value = JSON.stringify(json, null, 2);
+          localStorage.setItem(STORAGE_KEY, jsonInput.value);
           updateJsonView();
         } catch (e) {
           console.error("Invalid JSON for formatting:", e);
-          jsonTree.innerHTML =
-            '<span style="color: red;">Invalid JSON: Cannot format. Ensure to provide valid JSON.</span>';
+          jsonTree.innerHTML = createErrorMessage(e, jsonInput.value);
+          jsonInput.classList.add("error");
         }
       });
 
@@ -381,6 +563,9 @@
         clearSearch();
       });
 
+      /**
+       * Clears the search input field, removes all search highlighting, and resets the filter state.
+       */
       function clearSearch() {
         searchInput.value = "";
         clearSearchBtn.classList.remove("visible");
@@ -388,6 +573,11 @@
         searchInput.focus();
       }
 
+      /**
+       * Navigates through matched search results in the specified direction.
+       * Updates highlighting and scrolls the current match into view.
+       * @param {number} direction - Direction to navigate: 1 for next, -1 for previous
+       */
       function navigateMatches(direction) {
         if (matchedNodes.length === 0) return;
 
@@ -410,6 +600,9 @@
         updateMatchCounter();
       }
 
+      /**
+       * Updates the match counter display to show the current match position out of total matches.
+       */
       function updateMatchCounter() {
         if (matchedNodes.length === 0) {
           matchCounter.textContent = "";
@@ -418,6 +611,11 @@
         }
       }
 
+      /**
+       * Filters tree nodes based on a search term, showing only matching nodes and their parents.
+       * Highlights matches and automatically expands parent nodes to reveal matched children.
+       * @param {string} searchTerm - The search string to filter nodes by (searches keys, values, and paths)
+       */
       function filterNodes(searchTerm) {
         const nodes = document.querySelectorAll(".node");
         const lowerSearchTerm = searchTerm.toLowerCase().trim();
@@ -482,6 +680,10 @@
         updateMatchCounter();
       }
 
+      /**
+       * Recursively expands all parent nodes of a given node to make it visible in the tree.
+       * @param {HTMLElement} node - The DOM node whose parents should be expanded
+       */
       function expandParents(node) {
         let parent = node.parentElement;
         while (parent) {
@@ -500,6 +702,13 @@
         }
       }
 
+      /**
+       * Recursively creates an HTML tree view representation of a JSON object.
+       * Generates collapsible nodes for objects/arrays and displays primitive values with type styling.
+       * @param {*} obj - The JSON object or array to render
+       * @param {string} path - The JSONPath string representing the current location in the tree
+       * @returns {string} HTML string containing the tree structure
+       */
       function createTreeView(obj, path) {
         let html = "<ul>";
         for (const key in obj) {
@@ -530,6 +739,10 @@
         return html;
       }
 
+      /**
+       * Attaches event listeners to all tree nodes for interactions (hover, toggle, copy).
+       * Handles mouseover to display paths, toggle clicks for expand/collapse, and copy button functionality.
+       */
       function addEventListeners() {
         const nodes = document.querySelectorAll(".node");
         nodes.forEach((node) => {
