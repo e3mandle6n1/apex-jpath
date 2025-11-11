@@ -34,6 +34,33 @@
 
       .left-pane {
         border-right: 1px solid #333;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .pane-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .pane-header h2 {
+        margin: 0;
+      }
+
+      #format-json-btn {
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #555;
+        border-radius: 5px;
+        padding: 4px 12px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      #format-json-btn:hover {
+        background-color: #444;
       }
 
       .search-container {
@@ -241,7 +268,10 @@
   <body>
     <div class="container">
       <div class="left-pane">
-        <h2>JSON Input</h2>
+        <div class="pane-header">
+          <h2>JSON Input</h2>
+          <button id="format-json-btn">Format</button>
+        </div>
         <textarea
           id="json-input"
           placeholder="Paste your JSON here..."
@@ -280,19 +310,39 @@
       const searchInput = document.getElementById("search-input");
       const clearSearchBtn = document.getElementById("clear-search");
       const matchCounter = document.getElementById("match-counter");
+      const formatJsonBtn = document.getElementById("format-json-btn");
 
       let currentMatchIndex = -1;
       let matchedNodes = [];
 
-      jsonInput.addEventListener("keyup", () => {
+      function updateJsonView(showError = true) {
         try {
           const json = JSON.parse(jsonInput.value);
           jsonTree.innerHTML = createTreeView(json, "$");
           addEventListeners();
           filterNodes(searchInput.value);
         } catch (e) {
-          jsonTree.innerHTML = '<span style="color: red;">Invalid JSON</span>';
+          if (showError) {
+            jsonTree.innerHTML =
+              '<span style="color: red;">Invalid JSON</span>';
+          }
         }
+      }
+
+      formatJsonBtn.addEventListener("click", () => {
+        try {
+          const json = JSON.parse(jsonInput.value);
+          jsonInput.value = JSON.stringify(json, null, 2);
+          updateJsonView();
+        } catch (e) {
+          console.error("Invalid JSON for formatting:", e);
+          jsonTree.innerHTML =
+            '<span style="color: red;">Invalid JSON: Cannot format. Ensure to provide valid JSON.</span>';
+        }
+      });
+
+      jsonInput.addEventListener("keyup", () => {
+        updateJsonView();
       });
 
       searchInput.addEventListener("input", () => {
