@@ -1,224 +1,489 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JSONPath Finder</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #000;
-            color: #fff;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background-color: #000;
+        color: #fff;
+        margin: 0;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
 
-        .container {
-            display: flex;
-            width: 100%;
-        }
+      .container {
+        display: flex;
+        width: 100%;
+      }
 
-        .left-pane, .right-pane {
-            width: 50%;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-            height: 100vh;
-        }
+      .left-pane,
+      .right-pane {
+        width: 50%;
+        padding: 20px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        height: 100vh;
+      }
 
-        .left-pane {
-            border-right: 1px solid #333;
-        }
+      .left-pane {
+        border-right: 1px solid #333;
+      }
 
-        #json-input {
-            width: 100%;
-            height: calc(100% - 40px);
-            background-color: #111;
-            color: #fff;
-            border: 1px solid #333;
-            border-radius: 5px;
-            padding: 10px;
-            box-sizing: border-box;
-            resize: none;
-            font-family: "Courier New", Courier, monospace;
-        }
+      .search-container {
+        margin-bottom: 15px;
+        position: relative;
+      }
 
-        #json-tree {
-            padding-left: 20px;
-        }
+      .search-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
 
-        .node {
-            cursor: pointer;
-            padding: 2px 0;
-            white-space: nowrap;
-        }
+      #search-input {
+        width: 100%;
+        background-color: #111;
+        color: #fff;
+        border: 1px solid #333;
+        border-radius: 5px;
+        padding: 10px 70px 10px 10px;
+        box-sizing: border-box;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        font-size: 14px;
+      }
 
-        .node .key {
-            font-weight: bold;
-        }
+      #search-input:focus {
+        outline: none;
+        border-color: #0a0;
+      }
 
-        .node .value {
-            color: #ccc;
-        }
+      #search-input::placeholder {
+        color: #666;
+      }
 
-        .node .toggle {
-            margin-right: 5px;
-        }
+      .search-controls {
+        position: absolute;
+        right: 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
 
-        .node ul {
-            list-style-type: none;
-            padding-left: 20px;
-            margin: 0;
-        }
+      .match-counter {
+        color: #666;
+        font-size: 12px;
+        padding: 0 8px;
+        white-space: nowrap;
+      }
 
-        .node > ul {
-            display: none;
-        }
+      .clear-search {
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        font-size: 18px;
+        padding: 0 5px;
+        display: none;
+      }
 
-        .node.open > ul {
-            display: block;
-        }
+      .clear-search:hover {
+        color: #fff;
+      }
 
-        .copy-btn {
-            display: none;
-            margin-left: 10px;
-            padding: 2px 8px;
-            background-color: #333;
-            color: #fff;
-            border: 1px solid #555;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 11px;
-            vertical-align: middle;
-        }
+      .clear-search.visible {
+        display: block;
+      }
 
-        .copy-btn:hover {
-            background-color: #555;
-        }
+      #json-input {
+        width: 100%;
+        height: calc(100% - 40px);
+        background-color: #111;
+        color: #fff;
+        border: 1px solid #333;
+        border-radius: 5px;
+        padding: 10px;
+        box-sizing: border-box;
+        resize: none;
+        font-family: "Courier New", Courier, monospace;
+      }
 
-        .copy-btn:active {
-            background-color: #666;
-        }
+      #json-tree {
+        padding-left: 20px;
+      }
 
-        .node:hover > .copy-btn {
-            display: inline-block;
-        }
+      .node {
+        cursor: pointer;
+        padding: 2px 0;
+        white-space: nowrap;
+      }
 
-        .copy-btn.copied {
-            background-color: #0a0;
-            border-color: #0f0;
-        }
+      .node.hidden {
+        display: none;
+      }
 
-        #path-display {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            width: 50%;
-            background-color: #111;
-            padding: 15px 20px;
-            box-sizing: border-box;
-            border-top: 1px solid #333;
-            font-family: "Courier New", Courier, monospace;
-            color: #0f0;
-        }
+      .node.highlight .key,
+      .node.highlight .value {
+        background-color: #333;
+        padding: 2px 4px;
+        border-radius: 3px;
+      }
+
+      .node.highlight.current-match .key,
+      .node.highlight.current-match .value {
+        background-color: #0a0;
+        color: #000;
+      }
+
+      .node .key {
+        font-weight: bold;
+      }
+
+      .node .value {
+        color: #ccc;
+      }
+
+      .node .toggle {
+        margin-right: 5px;
+      }
+
+      .node ul {
+        list-style-type: none;
+        padding-left: 20px;
+        margin: 0;
+      }
+
+      .node > ul {
+        display: none;
+      }
+
+      .node.open > ul {
+        display: block;
+      }
+
+      .copy-btn {
+        display: none;
+        margin-left: 10px;
+        padding: 2px 8px;
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #555;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 11px;
+        vertical-align: middle;
+      }
+
+      .copy-btn:hover {
+        background-color: #555;
+      }
+
+      .copy-btn:active {
+        background-color: #666;
+      }
+
+      .node:hover > .copy-btn {
+        display: inline-block;
+      }
+
+      .copy-btn.copied {
+        background-color: #0a0;
+        border-color: #0f0;
+      }
+
+      #path-display {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        width: 50%;
+        background-color: #111;
+        padding: 15px 20px;
+        box-sizing: border-box;
+        border-top: 1px solid #333;
+        font-family: "Courier New", Courier, monospace;
+        color: #0f0;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="left-pane">
-            <h2>JSON Input</h2>
-            <textarea id="json-input" placeholder="Paste your JSON here..."></textarea>
+      <div class="left-pane">
+        <h2>JSON Input</h2>
+        <textarea
+          id="json-input"
+          placeholder="Paste your JSON here..."
+        ></textarea>
+      </div>
+      <div class="right-pane">
+        <h2>Hierarchical View</h2>
+        <div class="search-container">
+          <div class="search-wrapper">
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Search nodes (keys or values)..."
+            />
+            <div class="search-controls">
+              <span class="match-counter" id="match-counter"></span>
+              <button
+                class="clear-search"
+                id="clear-search"
+                title="Clear search"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="right-pane">
-            <h2>Hierarchical View</h2>
-            <div id="json-tree"></div>
-        </div>
+        <div id="json-tree"></div>
+      </div>
     </div>
-    <div id="path-display">Path: </div>
+    <div id="path-display">Path:</div>
 
     <script>
-        const jsonInput = document.getElementById('json-input');
-        const jsonTree = document.getElementById('json-tree');
-        const pathDisplay = document.getElementById('path-display');
+      const jsonInput = document.getElementById("json-input");
+      const jsonTree = document.getElementById("json-tree");
+      const pathDisplay = document.getElementById("path-display");
+      const searchInput = document.getElementById("search-input");
+      const clearSearchBtn = document.getElementById("clear-search");
+      const matchCounter = document.getElementById("match-counter");
 
-        jsonInput.addEventListener('keyup', () => {
-            try {
-                const json = JSON.parse(jsonInput.value);
-                jsonTree.innerHTML = createTreeView(json, '$');
-                addEventListeners();
-            } catch (e) {
-                jsonTree.innerHTML = '<span style="color: red;">Invalid JSON</span>';
+      let currentMatchIndex = -1;
+      let matchedNodes = [];
+
+      jsonInput.addEventListener("keyup", () => {
+        try {
+          const json = JSON.parse(jsonInput.value);
+          jsonTree.innerHTML = createTreeView(json, "$");
+          addEventListeners();
+          filterNodes(searchInput.value);
+        } catch (e) {
+          jsonTree.innerHTML = '<span style="color: red;">Invalid JSON</span>';
+        }
+      });
+
+      searchInput.addEventListener("input", () => {
+        filterNodes(searchInput.value);
+        clearSearchBtn.classList.toggle(
+          "visible",
+          searchInput.value.length > 0
+        );
+      });
+
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          navigateMatches(1);
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          navigateMatches(-1);
+        } else if (e.key === "Escape") {
+          clearSearch();
+        }
+      });
+
+      clearSearchBtn.addEventListener("click", () => {
+        clearSearch();
+      });
+
+      function clearSearch() {
+        searchInput.value = "";
+        clearSearchBtn.classList.remove("visible");
+        filterNodes("");
+        searchInput.focus();
+      }
+
+      function navigateMatches(direction) {
+        if (matchedNodes.length === 0) return;
+
+        if (currentMatchIndex >= 0 && currentMatchIndex < matchedNodes.length) {
+          matchedNodes[currentMatchIndex].classList.remove("current-match");
+        }
+
+        currentMatchIndex += direction;
+        if (currentMatchIndex >= matchedNodes.length) {
+          currentMatchIndex = 0;
+        } else if (currentMatchIndex < 0) {
+          currentMatchIndex = matchedNodes.length - 1;
+        }
+
+        const currentNode = matchedNodes[currentMatchIndex];
+        currentNode.classList.add("current-match");
+        currentNode.scrollIntoView({ behavior: "smooth", block: "center" });
+        pathDisplay.textContent = `Path: ${currentNode.dataset.path}`;
+
+        updateMatchCounter();
+      }
+
+      function updateMatchCounter() {
+        if (matchedNodes.length === 0) {
+          matchCounter.textContent = "";
+        } else {
+          matchCounter.textContent = `${currentMatchIndex + 1}/${matchedNodes.length}`;
+        }
+      }
+
+      function filterNodes(searchTerm) {
+        const nodes = document.querySelectorAll(".node");
+        const lowerSearchTerm = searchTerm.toLowerCase().trim();
+        matchedNodes = [];
+        currentMatchIndex = -1;
+
+        if (!lowerSearchTerm) {
+          nodes.forEach((node) => {
+            node.classList.remove("hidden", "highlight", "current-match");
+          });
+          updateMatchCounter();
+          return;
+        }
+
+        nodes.forEach((node) => {
+          const key = node.querySelector(".key")?.textContent || "";
+          const value = node.querySelector(".value")?.textContent || "";
+          const pathText = node.dataset.path || "";
+
+          const matches =
+            key.toLowerCase().includes(lowerSearchTerm) ||
+            value.toLowerCase().includes(lowerSearchTerm) ||
+            pathText.toLowerCase().includes(lowerSearchTerm);
+
+          if (matches) {
+            node.classList.remove("hidden");
+            node.classList.add("highlight");
+            matchedNodes.push(node);
+            expandParents(node);
+          } else {
+            node.classList.remove("highlight", "current-match");
+            // only check direct children instead of all descendants
+            const hasMatchingChild = Array.from(node.children).some((child) => {
+              if (child.tagName === "UL") {
+                return Array.from(child.children).some(
+                  (li) =>
+                    li.classList.contains("node") &&
+                    li.classList.contains("highlight")
+                );
+              }
+              return false;
+            });
+
+            if (!hasMatchingChild) {
+              node.classList.add("hidden");
+            } else {
+              node.classList.remove("hidden");
+              expandParents(node);
             }
+          }
         });
 
-        function createTreeView(obj, path) {
-            let html = '<ul>';
-            for (const key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    const newPath = Array.isArray(obj) ? `${path}[${key}]` : `${path}.${key}`;
-                    const isObject = typeof obj[key] === 'object' && obj[key] !== null;
+        // Highlight first match by default
+        if (matchedNodes.length > 0) {
+          currentMatchIndex = 0;
+          matchedNodes[0].classList.add("current-match");
+          matchedNodes[0].scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+        }
 
-                    html += `<li class="node" data-path="${newPath}">`;
-                    if (isObject) {
-                        html += '<span class="toggle">+</span>';
-                    }
-                    html += `<span class="key">${key}:</span> `;
-                    if (isObject) {
-                        html += createTreeView(obj[key], newPath);
-                    } else {
-                        html += `<span class="value">${JSON.stringify(obj[key])}</span>`;
-                    }
-                    html += `<button class="copy-btn" title="Copy path">Copy</button>`;
-                    html += '</li>';
-                }
+        updateMatchCounter();
+      }
+
+      function expandParents(node) {
+        let parent = node.parentElement;
+        while (parent) {
+          const parentNode = parent.closest(".node");
+          if (parentNode) {
+            parentNode.classList.add("open");
+            parentNode.classList.remove("hidden");
+            const toggle = parentNode.querySelector(":scope > .toggle");
+            if (toggle) {
+              toggle.textContent = "-";
             }
-            html += '</ul>';
-            return html;
+            parent = parentNode.parentElement;
+          } else {
+            break;
+          }
         }
+      }
 
-        function addEventListeners() {
-            const nodes = document.querySelectorAll('.node');
-            nodes.forEach(node => {
-                node.addEventListener('mouseover', (event) => {
-                    event.stopPropagation();
-                    pathDisplay.textContent = `Path: ${node.dataset.path}`;
-                });
+      function createTreeView(obj, path) {
+        let html = "<ul>";
+        for (const key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            const newPath = Array.isArray(obj)
+              ? `${path}[${key}]`
+              : `${path}.${key}`;
+            const isObject = typeof obj[key] === "object" && obj[key] !== null;
 
-                const toggle = node.querySelector('.toggle');
-                if (toggle) {
-                    toggle.addEventListener('click', (event) => {
-                        event.stopPropagation();
-                        node.classList.toggle('open');
-                        toggle.textContent = node.classList.contains('open') ? '-' : '+';
-                    });
-                }
+            html += `<li class="node" data-path="${newPath}">`;
+            if (isObject) {
+              html += '<span class="toggle">+</span>';
+            }
+            html += `<span class="key">${key}:</span> `;
+            if (isObject) {
+              html += createTreeView(obj[key], newPath);
+            } else {
+              html += `<span class="value">${JSON.stringify(obj[key])}</span>`;
+            }
+            html += `<button class="copy-btn" title="Copy path">Copy</button>`;
+            html += "</li>";
+          }
+        }
+        html += "</ul>";
+        return html;
+      }
 
-                const copyBtn = node.querySelector('.copy-btn');
-                if (copyBtn) {
-                    copyBtn.addEventListener('click', (event) => {
-                        event.stopPropagation();
-                        const path = node.dataset.path;
-                        navigator.clipboard.writeText(path).then(() => {
-                            copyBtn.textContent = 'Copied!';
-                            copyBtn.classList.add('copied');
-                            setTimeout(() => {
-                                copyBtn.textContent = 'Copy';
-                                copyBtn.classList.remove('copied');
-                            }, 1500);
-                        }).catch(err => {
-                            console.error('Failed to copy:', err);
-                            copyBtn.textContent = 'Failed';
-                            setTimeout(() => {
-                                copyBtn.textContent = 'Copy';
-                            }, 1500);
-                        });
-                    });
-                }
+      function addEventListeners() {
+        const nodes = document.querySelectorAll(".node");
+        nodes.forEach((node) => {
+          node.addEventListener("mouseover", (event) => {
+            event.stopPropagation();
+            pathDisplay.textContent = `Path: ${node.dataset.path}`;
+          });
+
+          const toggle = node.querySelector(".toggle");
+          if (toggle) {
+            toggle.addEventListener("click", (event) => {
+              event.stopPropagation();
+              node.classList.toggle("open");
+              toggle.textContent = node.classList.contains("open") ? "-" : "+";
             });
-        }
+          }
+
+          const copyBtn = node.querySelector(".copy-btn");
+          if (copyBtn) {
+            copyBtn.addEventListener("click", (event) => {
+              event.stopPropagation();
+              const path = node.dataset.path;
+              navigator.clipboard
+                .writeText(path)
+                .then(() => {
+                  copyBtn.textContent = "Copied!";
+                  copyBtn.classList.add("copied");
+                  setTimeout(() => {
+                    copyBtn.textContent = "Copy";
+                    copyBtn.classList.remove("copied");
+                  }, 1500);
+                })
+                .catch((err) => {
+                  console.error("Failed to copy:", err);
+                  copyBtn.textContent = "Failed";
+                  setTimeout(() => {
+                    copyBtn.textContent = "Copy";
+                  }, 1500);
+                });
+            });
+          }
+        });
+      }
     </script>
-</body>
+  </body>
 </html>
