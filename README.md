@@ -90,7 +90,7 @@ Install this package using the following URL in your Salesforce sandbox org:
 
 🔍 **Need help constructing JSONPath expressions?**
 
-Use the interactive <a href="https://e3mandle6ni.github.io/apex-jpath/" target="_blank" rel="noopener noreferrer">**JSONPath Finder Tool**</a> to:
+Use the interactive <a href="https://e3mandle6n1.github.io/apex-jpath/" target="_blank" rel="noopener noreferrer">**JSONPath Finder Tool**</a> to:
 
 - **Paste your JSON payload** and instantly visualise its structure
 - **Navigate hierarchically** through nested objects and arrays
