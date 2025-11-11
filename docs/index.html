@@ -294,6 +294,40 @@
         border-top: 1px solid #333;
         font-family: "Courier New", Courier, monospace;
         color: #0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      #path-text {
+        flex-grow: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .footer-branding {
+        font-family: "Fira Sans", sans-serif;
+        font-size: 12px;
+        color: #888;
+        text-align: right;
+        white-space: nowrap;
+        margin-left: 20px;
+      }
+
+      .footer-branding a {
+        color: #aaa;
+        text-decoration: none;
+      }
+
+      .footer-branding a:hover {
+        color: #fff;
+        text-decoration: underline;
+      }
+
+      .footer-branding .separator {
+        margin: 0 8px;
+        color: #555;
       }
 
       .node .value {
@@ -332,12 +366,10 @@
         <textarea id="json-input" placeholder="Paste your JSON here...">
 {
                 "creator": {
-                    "name": "Emandleni M",
-                    "tagline": "Building the tools I wish I had for others to use and love.",
+                    "name": "Emandleni",
+                    "tagline": "Building the tools I wish I had for others to use and grow to love.",
                     "links": {
-                    "github": "https://github.com/e3mandle6n1",
                     "twitter": "https://twitter.com/e3mandle6ni",
-                    "trailblazer": "https://trailblazer.me/id/justemandleni",
                     "linkedIn": "https://linkedin.com/in/emandleni-m-994240201/"
                     }
                 },
@@ -350,23 +382,38 @@
                         { "name": "TypeScript", "proficiency": "Advanced", "focus": "Primary" },
                         { "name": "Python", "proficiency": "Intermediate", "focus": "Secondary" },
                         { "name": "Java", "proficiency": "Intermediate", "focus": "Primary" },
-                        { "name": "C#", "proficiency": "Expert", "focus": "Secondary" }
+                        { "name": "C#", "proficiency": "Expert", "focus": "Secondary" },
+                        { "name": "SQL", "proficiency": "Advanced", "focus": "Primary" }             
                     ],
                     "frontend": [
-                        { "name": "Lightning Web Components (LWC)", "experience": "Expert" },
                         { "name": "React", "experience": "Advanced" },
-                        { "name": "Vite", "experience": "Intermediate" }
+                        { "name": "Lightning Web Components (LWC)", "experience": "Expert" },
+                        { "name": "Vite", "experience": "Intermediate" },
+                        { "name": "Tailwind CSS", "experience": "Intermediate" },
+                        { "name": "Salesforce Lightning Design System (SLDS)", "experience": "Advanced" },
+                        { "name": "HTML5 & CSS3", "experience": "Advanced" },
+                        { "name": "Vue.js", "experience": "Beginner" },
+                        { "name": "Svelte", "experience": "Beginner" }
                     ],
                     "backend": [
                         { "name": "Node.js", "experience": "Advanced" },
-                        { "name": "FastAPI", "experience": "Intermediate" }
+                        { "name": "FastAPI", "experience": "Intermediate" },
+                        { "name": "Express.js", "experience": "Advanced" },
+                        { "name": "Spring Boot", "experience": "Intermediate" },
+                        { "name": ".NET Core", "experience": "Advanced" },
+                        { "name": "Flask", "experience": "Beginner" },
+                        { "name": "Django", "experience": "Beginner" }
                     ],
                     "devops": [
                         { "name": "GitHub Actions", "area": "CI/CD Automation" },
                         { "name": "Docker", "area": "Containerization" },
                         { "name": "Salesforce DX (sfDX)", "area": "Salesforce Tooling" },
                         { "name": "GitLab CI", "area": "CI/CD Automation" },
-                        { "name": "Copado CLI", "area": "Salesforce DevOps" }
+                        { "name": "Copado CLI", "area": "Salesforce DevOps" },
+                        { "name": "Jenkins", "area": "CI/CD Automation" },
+                        { "name": "Kubernetes", "area": "Container Orchestration" },
+                        { "name": "Terraform", "area": "Infrastructure as Code" },
+                        { "name": "Ansible", "area": "Configuration Management" }
                     ]
                     },
                     "specialties": [
@@ -385,6 +432,22 @@
                     {
                         "area": "System Architecture",
                         "skills": ["Event-Driven Microservices", "Domain-Driven Design (DDD)"]
+                    },
+                    {
+                        "area": "Web Development",
+                        "skills": ["Responsive Design", "Progressive Web Apps (PWAs)", "Performance Optimisation"]
+                    },
+                    {
+                        "area": "Data Management & Security",
+                        "skills": ["Data Modeling", "Data Migration", "Security Best Practices"]
+                    },
+                    {
+                        "area": "Cloud Platforms",
+                        "skills": ["Salesforce Cloud", "Heroku", "AWS Basics"]
+                    },
+                    {
+                        "area": "Testing & Quality Assurance",
+                        "skills": ["Unit Testing", "Integration Testing", "Test Automation"]
                     }
                     ]
                 },
@@ -451,12 +514,32 @@
         <div id="json-tree"></div>
       </div>
     </div>
-    <div id="path-display">Path:</div>
+    <div id="path-display">
+      <span id="path-text">Path:</span>
+      <div class="footer-branding">
+        <a
+          href="https://github.com/e3mandle6n1/apex-jpath"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Salesforce apex-jpath</a
+        >
+        <span class="separator">|</span>
+        <span
+          >by
+          <a
+            href="https://github.com/e3mandle6n1"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Emandleni 🦍</a
+          ></span
+        >
+      </div>
+    </div>
 
     <script>
       const jsonInput = document.getElementById("json-input");
       const jsonTree = document.getElementById("json-tree");
-      const pathDisplay = document.getElementById("path-display");
+      const pathText = document.getElementById("path-text");
       const searchInput = document.getElementById("search-input");
       const clearSearchBtn = document.getElementById("clear-search");
       const matchCounter = document.getElementById("match-counter");
@@ -688,7 +771,7 @@
         const currentNode = matchedNodes[currentMatchIndex];
         currentNode.classList.add("current-match");
         currentNode.scrollIntoView({ behavior: "smooth", block: "center" });
-        pathDisplay.textContent = `Path: ${currentNode.dataset.path}`;
+        pathText.textContent = `Path: ${currentNode.dataset.path}`;
 
         updateMatchCounter();
       }
@@ -841,7 +924,7 @@
         nodes.forEach((node) => {
           node.addEventListener("mouseover", (event) => {
             event.stopPropagation();
-            pathDisplay.textContent = `Path: ${node.dataset.path}`;
+            pathText.textContent = `Path: ${node.dataset.path}`;
           });
 
           const toggle = node.querySelector(".toggle");
@@ -881,7 +964,7 @@
       }
 
       document.addEventListener("DOMContentLoaded", () => {
-        const formatButton = document.getElementById("format-btn");
+        const formatButton = document.getElementById("format-json-btn");
         if (formatButton) {
           formatButton.click();
         }
