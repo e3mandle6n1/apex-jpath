@@ -211,6 +211,31 @@
         font-family: "Courier New", Courier, monospace;
         color: #0f0;
       }
+
+      .node .value {
+        color: #ccc;
+      }
+
+      .node .value.string {
+        color: #ce9178;
+      }
+
+      .node .value.number {
+        color: #b5cea8;
+      }
+
+      .node .value.boolean {
+        color: #569cd6;
+      }
+
+      .node .value.null {
+        color: #808080;
+        font-style: italic;
+      }
+
+      .node .toggle {
+        margin-right: 5px;
+      }
     </style>
   </head>
   <body>
@@ -383,7 +408,6 @@
           }
         });
 
-        // Highlight first match by default
         if (matchedNodes.length > 0) {
           currentMatchIndex = 0;
           matchedNodes[0].classList.add("current-match");
@@ -431,7 +455,10 @@
             if (isObject) {
               html += createTreeView(obj[key], newPath);
             } else {
-              html += `<span class="value">${JSON.stringify(obj[key])}</span>`;
+              const value = obj[key];
+              const valueType = value === null ? "null" : typeof value;
+              const displayValue = JSON.stringify(value);
+              html += `<span class="value ${valueType}">${displayValue}</span>`;
             }
             html += `<button class="copy-btn" title="Copy path">Copy</button>`;
             html += "</li>";
