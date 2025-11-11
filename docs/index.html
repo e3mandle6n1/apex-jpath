@@ -879,6 +879,13 @@
           }
         });
       }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const formatButton = document.getElementById("format-btn");
+        if (formatButton) {
+          formatButton.click();
+        }
+      });
     </script>
   </body>
 </html>
