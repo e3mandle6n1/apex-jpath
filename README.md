@@ -17,7 +17,7 @@ The apex-jpath library simplifies this by providing a concise, expressive way to
   - [Unlocked Package Installation](#unlocked-package-installation)
   - [Developer Installation](#developer-installation)
 - [Features](#features)
-- [JSONPath Finder Tool](#jsonpath-finder-tool)
+- [→ JSONPath Finder Tool ←🆕😍](#jsonpath-finder-tool)
 - [Usage Examples](#usage-examples)
   - [Basic Property Access](#basic-property-access)
   - [Array Indexing](#array-indexing)
