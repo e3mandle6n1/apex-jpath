@@ -11,49 +11,51 @@ The apex-jpath library simplifies this by providing a concise, expressive way to
 [![Node.js](https://img.shields.io/badge/Node.js-6DA55F?logo=node.js&logoColor=white)](#)
 
 ## Table of Contents
-* [Overview](#overview)
-* [Installation](#installation)
-    * [Unlocked Package Installation](#unlocked-package-installation)
-    * [Developer Installation](#developer-installation)
-* [Features](#features)
-* [Usage Examples](#usage-examples)
-    * [Basic Property Access](#basic-property-access)
-    * [Array Indexing](#array-indexing)
-    * [Filtering](#filtering)
-    * [Numeric Comparisons with String Values](#numeric-comparisons-with-string-values)
-* [More Usage Examples](#more-usage-examples)
-    * [Sample JSON](#sample-json)
-    * [Basic Usage](#basic-usage)
-        * [1. Accessing a Top-Level Property](#1-accessing-a-top-level-property)
-        * [2. Accessing a Nested Property](#2-accessing-a-nested-property)
-        * [3. Accessing an Element in an Array by Index](#3-accessing-an-element-in-an-array-by-index)
-        * [4. Accessing a Specific Property of an Array Element](#4-accessing-a-specific-property-of-an-array-element)
-    * [Intermediate Usage](#intermediate-usage)
-        * [5. Getting a List of a Specific Property from an Array of Objects](#5-getting-a-list-of-a-specific-property-from-an-array-of-objects)
-        * [6. Retrieving an Entire Array](#6-retrieving-an-entire-array)
-    * [Advanced Usage](#advanced-usage)
-        * [7. Filtering an Array to Find an Object by a Property Value](#7-filtering-an-array-to-find-an-object-by-a-property-value)
-        * [8. Filtering to Get a Property of a Matching Object](#8-filtering-to-get-a-property-of-a-matching-object)
-        * [9. Filtering Based on a Boolean Property](#9-filtering-based-on-a-boolean-property)
-        * [10. Filtering Based on "Greater Than" or "Less Than"](#10-filtering-based-on-greater-than-or-less-than)
-* [How?](#how)
-* [Supported Operations](#supported-operations)
-* [Limitations and Design Choices](#limitations-and-design-choices)
-* [Testing](#testing)
-* [License](#license)
-* [Contributing](#contributing)
-* [Support](#support)
+
+- [Overview](#overview)
+- [Installation](#installation)
+  - [Unlocked Package Installation](#unlocked-package-installation)
+  - [Developer Installation](#developer-installation)
+- [Features](#features)
+- [JSONPath Finder Tool](#jsonpath-finder-tool)
+- [Usage Examples](#usage-examples)
+  - [Basic Property Access](#basic-property-access)
+  - [Array Indexing](#array-indexing)
+  - [Filtering](#filtering)
+  - [Numeric Comparisons with String Values](#numeric-comparisons-with-string-values)
+- [More Usage Examples](#more-usage-examples)
+  - [Sample JSON](#sample-json)
+  - [Basic Usage](#basic-usage)
+    - [1. Accessing a Top-Level Property](#1-accessing-a-top-level-property)
+    - [2. Accessing a Nested Property](#2-accessing-a-nested-property)
+    - [3. Accessing an Element in an Array by Index](#3-accessing-an-element-in-an-array-by-index)
+    - [4. Accessing a Specific Property of an Array Element](#4-accessing-a-specific-property-of-an-array-element)
+  - [Intermediate Usage](#intermediate-usage)
+    - [5. Getting a List of a Specific Property from an Array of Objects](#5-getting-a-list-of-a-specific-property-from-an-array-of-objects)
+    - [6. Retrieving an Entire Array](#6-retrieving-an-entire-array)
+  - [Advanced Usage](#advanced-usage)
+    - [7. Filtering an Array to Find an Object by a Property Value](#7-filtering-an-array-to-find-an-object-by-a-property-value)
+    - [8. Filtering to Get a Property of a Matching Object](#8-filtering-to-get-a-property-of-a-matching-object)
+    - [9. Filtering Based on a Boolean Property](#9-filtering-based-on-a-boolean-property)
+    - [10. Filtering Based on "Greater Than" or "Less Than"](#10-filtering-based-on-greater-than-or-less-than)
+- [How?](#how)
+- [Supported Operations](#supported-operations)
+- [Limitations and Design Choices](#limitations-and-design-choices)
+- [Testing](#testing)
+- [License](#license)
+- [Contributing](#contributing)
+- [Support](#support)
 
 ## Overview
 
 This library provides JSONPath functionality directly within Apex, allowing developers to query and filter JSON data using familiar JSONPath expressions. It's designed specifically for Salesforce environments and supports common JSONPath operations including:
 
--   Property access (`.property`)
--   Array indexing (`[0]`, `[-1]`)
--   Wildcard matching (`[*]`)
--   Filter expressions (`[?(@.property > 10)]`)
--   Recursive descent (`..property`)
--   Slice operations (`[0:2]`)
+- Property access (`.property`)
+- Array indexing (`[0]`, `[-1]`)
+- Wildcard matching (`[*]`)
+- Filter expressions (`[?(@.property > 10)]`)
+- Recursive descent (`..property`)
+- Slice operations (`[0:2]`)
 
 ## Installation
 
@@ -77,18 +79,39 @@ Install this package using the following URL in your Salesforce sandbox org:
 
 ## Features
 
--   **Native Apex Implementation**: Pure Apex code with no external dependencies
--   **Full JSONPath Support**: Implements core JSONPath specification with Salesforce-specific enhancements
--   **Type Safety**: Robust type handling with automatic conversion between numeric types
--   **Filter Expressions**: Complex filtering with comparison operators and logical conditions
--   **Error Handling**: Comprehensive exception handling with descriptive error messages
--   **Performance Optimized**: Efficient parsing and evaluation of JSONPath expressions
+- **Native Apex Implementation**: Pure Apex code with no external dependencies
+- **Full JSONPath Support**: Implements core JSONPath specification with Salesforce-specific enhancements
+- **Type Safety**: Robust type handling with automatic conversion between numeric types
+- **Filter Expressions**: Complex filtering with comparison operators and logical conditions
+- **Error Handling**: Comprehensive exception handling with descriptive error messages
+- **Performance Optimized**: Efficient parsing and evaluation of JSONPath expressions
+
+## JSONPath Finder Tool
+
+🔍 **Need help constructing JSONPath expressions?**
+
+Use the interactive <a href="https://e3mandle6ni.github.io/apex-jpath/" target="_blank" rel="noopener noreferrer">**JSONPath Finder Tool**</a> to:
+
+- **Paste your JSON payload** and instantly visualise its structure
+- **Navigate hierarchically** through nested objects and arrays
+- **Copy paths with one click** - hover over any node and click "Copy"
+- **Avoid syntax errors** - get the exact path you need
+
+Perfect for:
+
+- Building complex queries for deeply nested JSONfeat(v0.2): enhance core library, add interactive JSONPath Finder tool, and improve docs
+- Learning JSONPath syntax interactively
+- Quickly testing path expressions before using them in Apex
+
+> **Pro Tip:** Use this tool alongside the [example files](#usage-examples) to rapidly prototype and validate your JSONPath queries!
 
 ## Usage Examples
+
 > **Quick Testing:**  
 > For rapid hands-on evaluation, see the attached example files (`examples/example1.txt` and `examples/example2.txt`).  
 > These contain ready-to-copy Apex code blocks for Execute Anonymous windows, allowing you to quickly test JSONPath queries and verify library functionality in your Salesforce org.  
 > **Important:** Run each test block individually to avoid hitting governor limits (see comments in the files for details).
+
 ### Basic Property Access
 
 ```apex
@@ -171,7 +194,7 @@ Find a series of examples to get you started with `apex-jpath`. All examples wil
       {
         "id": 3,
         "name": "Book",
-        "price": 15.50,
+        "price": 15.5,
         "tags": ["reading", "education"],
         "inStock": false
       }
@@ -353,20 +376,20 @@ System.assertEquals(new List<Object>{'Laptop'}, expensiveProducts);
 
 ## How?
 
--   **JSONPath**: Main class for querying JSON data
--   **JSONPathException**: Custom exception class for JSONPath-related errors
--   **JSONPathTest**: Comprehensive test suite demonstrating usage
+- **JSONPath**: Main class for querying JSON data
+- **JSONPathException**: Custom exception class for JSONPath-related errors
+- **JSONPathTest**: Comprehensive test suite demonstrating usage
 
 ## Supported Operations
 
-| Operation | Syntax | Description |
-| :--- | :--- | :--- |
-| Property Access | `$.property` | Access object property |
-| Array Indexing | `$.array[0]` | Access array element by index |
-| Wildcard | `$.array[*]` | Select all elements |
-| Filter | `$.array[?(@.prop > 10)]` | Filter elements |
-| Recursive Descent | `$..property` | Find property at any level |
-| Slice | `$.array[0:2]` | Extract slice of array |
+| Operation         | Syntax                    | Description                   |
+| :---------------- | :------------------------ | :---------------------------- |
+| Property Access   | `$.property`              | Access object property        |
+| Array Indexing    | `$.array[0]`              | Access array element by index |
+| Wildcard          | `$.array[*]`              | Select all elements           |
+| Filter            | `$.array[?(@.prop > 10)]` | Filter elements               |
+| Recursive Descent | `$..property`             | Find property at any level    |
+| Slice             | `$.array[0:2]`            | Extract slice of array        |
 
 ## Limitations and Design Choices
 
@@ -376,21 +399,21 @@ This library is intentionally focused on the most common and essential JSONPath 
 
 - **What it is:** The original JSONPath proposal allowed for arbitrary script expressions (typically JavaScript) to be evaluated within brackets, like `$.store.book[(@.length-1)]` to get the last book, or `$.store.book[?(@.price > 10 && @.category === 'fiction')]`.
 - **Why it's omitted:**
-    - **Security Risk:** Executing arbitrary script expressions is equivalent to `eval()`, which is a massive security vulnerability. It is explicitly disallowed in Apex for this reason.
-    - **Complexity:** Building a safe and efficient expression parser and evaluator from scratch in Apex is a monumental task that would make the library incredibly large and slow.
+  - **Security Risk:** Executing arbitrary script expressions is equivalent to `eval()`, which is a massive security vulnerability. It is explicitly disallowed in Apex for this reason.
+  - **Complexity:** Building a safe and efficient expression parser and evaluator from scratch in Apex is a monumental task that would make the library incredibly large and slow.
 
 **2. Complex Filter Logic (`&&`, `||`, Grouping)**
 
 - **What it is:** The ability to combine filter conditions, such as `[?(@.price < 10 && @.category == 'fiction')]`.
 - **Why it's omitted:**
-    - **Governor Limits:** A full-fledged logical expression parser can become very CPU-intensive, especially with nested logic and large arrays, posing a risk to Salesforce governor limits.
-    - **Pragmatism:** While powerful, these queries can often be simplified. A developer can first filter by `[?(@.price < 10)]` and then use a simple Apex loop on the smaller result set to check the second condition (`category == 'fiction'`). This approach is more explicit and often safer from a performance standpoint.
+  - **Governor Limits:** A full-fledged logical expression parser can become very CPU-intensive, especially with nested logic and large arrays, posing a risk to Salesforce governor limits.
+  - **Pragmatism:** While powerful, these queries can often be simplified. A developer can first filter by `[?(@.price < 10)]` and then use a simple Apex loop on the smaller result set to check the second condition (`category == 'fiction'`). This approach is more explicit and often safer from a performance standpoint.
 
 **3. JSONPath Functions (`.length()`, `.avg()`, `.match()`, etc.)**
 
 - **What it is:** The IETF RFC standardises functions that can be used within expressions, like `[?(@.title.length() > 10)]`.
 - **Why it's omitted:**
-    - **Implementation Complexity:** Each function would require custom logic to implement. Like complex filters, this adds significant overhead and potential performance issues. The logic for a function like `.match()` (regex matching) would be particularly complex in Apex.
+  - **Implementation Complexity:** Each function would require custom logic to implement. Like complex filters, this adds significant overhead and potential performance issues. The logic for a function like `.match()` (regex matching) would be particularly complex in Apex.
 
 **4. Accessing the Root (`$`) within Filters**
 
@@ -424,10 +447,3 @@ MIT License
 ## Support
 
 Questions and feature requests? Please use the [Discussions tab](https://github.com/e3mandle6n1/apex-jpath/discussions). For bugs, open an issue.
-
-
-
-
-
-
-
