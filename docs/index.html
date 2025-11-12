@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JSONPath Finder</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <script src="https://unpkg.com/jsonpath-plus@10.0.7/dist/index-browser-umd.cjs"></script>
     <style>
       body {
         font-family:
@@ -68,6 +69,42 @@
         position: relative;
       }
 
+      .mode-toggle-container {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 10px;
+      }
+
+      .mode-btn {
+        flex: 1;
+        background-color: #222;
+        color: #888;
+        border: 1px solid #333;
+        border-radius: 5px;
+        padding: 8px 16px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family:
+          "Fira Sans", "Helvetica Neue", "Apple SD Gothic Neo", "Malgun Gothic",
+          "Segoe UI", sans-serif;
+        pointer-events: auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      .mode-btn:hover {
+        background-color: #2a2a2a;
+        border-color: #444;
+      }
+
+      .mode-btn.active {
+        background-color: #0a0;
+        color: #000;
+        border-color: #0f0;
+        font-weight: bold;
+      }
+
       .search-wrapper {
         position: relative;
         display: flex;
@@ -128,6 +165,92 @@
 
       .clear-search.visible {
         display: block;
+      }
+
+      .query-results {
+        background-color: #111;
+        border: 1px solid #333;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 13px;
+      }
+
+      .query-results.hidden {
+        display: none;
+      }
+
+      .query-results-header {
+        color: #0a0;
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 14px;
+      }
+
+      .query-results-content {
+        background-color: #0a0a0a;
+        border: 1px solid #222;
+        border-radius: 3px;
+        padding: 10px;
+        max-height: 200px;
+        overflow-y: auto;
+        color: #ddd;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      .query-error {
+        color: #f00;
+        background-color: #2a0a0a;
+        border: 1px solid #f00;
+        border-radius: 3px;
+        padding: 10px;
+      }
+
+      .apex-code-snippet {
+        margin-top: 10px;
+        background-color: #0a0a0a;
+        border: 1px solid #222;
+        border-radius: 3px;
+        padding: 10px;
+      }
+
+      .apex-code-header {
+        color: #569cd6;
+        font-weight: bold;
+        margin-bottom: 5px;
+        font-size: 12px;
+      }
+
+      .apex-code {
+        color: #ce9178;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 12px;
+      }
+
+      .copy-apex-btn {
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #555;
+        border-radius: 3px;
+        padding: 4px 10px;
+        font-size: 11px;
+        cursor: pointer;
+        margin-top: 8px;
+        font-family:
+          "Fira Sans", "Helvetica Neue", "Apple SD Gothic Neo", "Malgun Gothic",
+          "Segoe UI", sans-serif;
+      }
+
+      .copy-apex-btn:hover {
+        background-color: #444;
+      }
+
+      .copy-apex-btn.copied {
+        background-color: #0a0;
+        border-color: #0f0;
+        color: #000;
       }
 
       #json-input {
@@ -366,10 +489,12 @@
         <textarea id="json-input" placeholder="Paste your JSON here...">
 {
                 "creator": {
-                    "name": "Emandleni",
-                    "tagline": "Building the tools I wish I had for others to use and grow to love.",
+                    "name": "Emandleni M",
+                    "tagline": "Building the tools I wish I had for others to use and love.",
                     "links": {
+                    "github": "https://github.com/e3mandle6n1",
                     "twitter": "https://twitter.com/e3mandle6ni",
+                    "trailblazer": "https://trailblazer.me/id/justemandleni",
                     "linkedIn": "https://linkedin.com/in/emandleni-m-994240201/"
                     }
                 },
@@ -382,38 +507,23 @@
                         { "name": "TypeScript", "proficiency": "Advanced", "focus": "Primary" },
                         { "name": "Python", "proficiency": "Intermediate", "focus": "Secondary" },
                         { "name": "Java", "proficiency": "Intermediate", "focus": "Primary" },
-                        { "name": "C#", "proficiency": "Expert", "focus": "Secondary" },
-                        { "name": "SQL", "proficiency": "Advanced", "focus": "Primary" }             
+                        { "name": "C#", "proficiency": "Expert", "focus": "Secondary" }
                     ],
                     "frontend": [
-                        { "name": "React", "experience": "Advanced" },
                         { "name": "Lightning Web Components (LWC)", "experience": "Expert" },
-                        { "name": "Vite", "experience": "Intermediate" },
-                        { "name": "Tailwind CSS", "experience": "Intermediate" },
-                        { "name": "Salesforce Lightning Design System (SLDS)", "experience": "Advanced" },
-                        { "name": "HTML5 & CSS3", "experience": "Advanced" },
-                        { "name": "Vue.js", "experience": "Beginner" },
-                        { "name": "Svelte", "experience": "Beginner" }
+                        { "name": "React", "experience": "Advanced" },
+                        { "name": "Vite", "experience": "Intermediate" }
                     ],
                     "backend": [
                         { "name": "Node.js", "experience": "Advanced" },
-                        { "name": "FastAPI", "experience": "Intermediate" },
-                        { "name": "Express.js", "experience": "Advanced" },
-                        { "name": "Spring Boot", "experience": "Intermediate" },
-                        { "name": ".NET Core", "experience": "Advanced" },
-                        { "name": "Flask", "experience": "Beginner" },
-                        { "name": "Django", "experience": "Beginner" }
+                        { "name": "FastAPI", "experience": "Intermediate" }
                     ],
                     "devops": [
                         { "name": "GitHub Actions", "area": "CI/CD Automation" },
                         { "name": "Docker", "area": "Containerization" },
                         { "name": "Salesforce DX (sfDX)", "area": "Salesforce Tooling" },
                         { "name": "GitLab CI", "area": "CI/CD Automation" },
-                        { "name": "Copado CLI", "area": "Salesforce DevOps" },
-                        { "name": "Jenkins", "area": "CI/CD Automation" },
-                        { "name": "Kubernetes", "area": "Container Orchestration" },
-                        { "name": "Terraform", "area": "Infrastructure as Code" },
-                        { "name": "Ansible", "area": "Configuration Management" }
+                        { "name": "Copado CLI", "area": "Salesforce DevOps" }
                     ]
                     },
                     "specialties": [
@@ -432,22 +542,6 @@
                     {
                         "area": "System Architecture",
                         "skills": ["Event-Driven Microservices", "Domain-Driven Design (DDD)"]
-                    },
-                    {
-                        "area": "Web Development",
-                        "skills": ["Responsive Design", "Progressive Web Apps (PWAs)", "Performance Optimisation"]
-                    },
-                    {
-                        "area": "Data Management & Security",
-                        "skills": ["Data Modeling", "Data Migration", "Security Best Practices"]
-                    },
-                    {
-                        "area": "Cloud Platforms",
-                        "skills": ["Salesforce Cloud", "Heroku", "AWS Basics"]
-                    },
-                    {
-                        "area": "Testing & Quality Assurance",
-                        "skills": ["Unit Testing", "Integration Testing", "Test Automation"]
                     }
                     ]
                 },
@@ -493,6 +587,10 @@
       <div class="right-pane">
         <h2>Hierarchical View</h2>
         <div class="search-container">
+          <div class="mode-toggle-container">
+            <button id="search-mode-btn" class="mode-btn active">Search</button>
+            <button id="query-mode-btn" class="mode-btn">Query</button>
+          </div>
           <div class="search-wrapper">
             <input
               type="text"
@@ -511,6 +609,7 @@
             </div>
           </div>
         </div>
+        <div id="query-results" class="query-results hidden"></div>
         <div id="json-tree"></div>
       </div>
     </div>
@@ -521,7 +620,7 @@
           href="https://github.com/e3mandle6n1/apex-jpath"
           target="_blank"
           rel="noopener noreferrer"
-          >Salesforce apex-jpath</a
+          >apex-jpath</a
         >
         <span class="separator">|</span>
         <span
@@ -530,440 +629,652 @@
             href="https://github.com/e3mandle6n1"
             target="_blank"
             rel="noopener noreferrer"
-            >Emandleni 🦍</a
+            >Emandleni M</a
           ></span
         >
       </div>
     </div>
 
     <script>
-      const jsonInput = document.getElementById("json-input");
-      const jsonTree = document.getElementById("json-tree");
-      const pathText = document.getElementById("path-text");
-      const searchInput = document.getElementById("search-input");
-      const clearSearchBtn = document.getElementById("clear-search");
-      const matchCounter = document.getElementById("match-counter");
-      const formatJsonBtn = document.getElementById("format-json-btn");
-
       let currentMatchIndex = -1;
       let matchedNodes = [];
+      let currentMode = "search";
       const STORAGE_KEY = "jsonPathFinder_lastInput";
 
-      // Load saved JSON from localStorage on page load
+      // Wait for DOM to be ready before accessing elements
       window.addEventListener("DOMContentLoaded", () => {
+        console.log("DOMContentLoaded fired!");
+        const jsonInput = document.getElementById("json-input");
+        const jsonTree = document.getElementById("json-tree");
+        const pathText = document.getElementById("path-text");
+        const searchInput = document.getElementById("search-input");
+        const clearSearchBtn = document.getElementById("clear-search");
+        const matchCounter = document.getElementById("match-counter");
+        const formatJsonBtn = document.getElementById("format-json-btn");
+        const searchModeBtn = document.getElementById("search-mode-btn");
+        const queryModeBtn = document.getElementById("query-mode-btn");
+        const queryResults = document.getElementById("query-results");
+
+        console.log("Elements found:", {
+          jsonInput: !!jsonInput,
+          jsonTree: !!jsonTree,
+          searchModeBtn: !!searchModeBtn,
+          queryModeBtn: !!queryModeBtn
+        });
+
+        // Load saved JSON from localStorage on page load
         const savedJson = localStorage.getItem(STORAGE_KEY);
         if (savedJson) {
           jsonInput.value = savedJson;
-          updateJsonView(false);
         }
-      });
 
-      /**
-       * Updates the JSON tree view by parsing the input and rendering the hierarchical structure.
-       * Clears error styling on successful parse, adds error styling and message on failure.
-       * @param {boolean} showError - Whether to display error messages in the UI (default: true)
-       */
-      function updateJsonView(showError = true) {
-        try {
-          const json = JSON.parse(jsonInput.value);
-          jsonTree.innerHTML = createTreeView(json, "$");
-          addEventListeners();
-          filterNodes(searchInput.value);
-          // Clear error styling if parse succeeds
-          jsonInput.classList.remove("error");
-        } catch (e) {
-          jsonInput.classList.add("error");
-          if (showError) {
-            jsonTree.innerHTML = createErrorMessage(e, jsonInput.value);
+        // Parse and display the JSON (either from localStorage or default)
+        if (jsonInput.value.trim()) {
+          updateJsonView(true);
+        }
+
+        /**
+         * Updates the JSON tree view by parsing the input and rendering the hierarchical structure.
+         * Clears error styling on successful parse, adds error styling and message on failure.
+         * @param {boolean} showError - Whether to display error messages in the UI (default: true)
+         */
+        function updateJsonView(showError = true) {
+          try {
+            const json = JSON.parse(jsonInput.value);
+            jsonTree.innerHTML = createTreeView(json, "$");
+            addEventListeners();
+            filterNodes(searchInput.value);
+            // Clear error styling if parse succeeds
+            jsonInput.classList.remove("error");
+          } catch (e) {
+            jsonInput.classList.add("error");
+            if (showError) {
+              jsonTree.innerHTML = createErrorMessage(e, jsonInput.value);
+            }
           }
         }
-      }
 
-      /**
-       * Creates a formatted HTML error message with detailed information about JSON parsing errors.
-       * Extracts line and column numbers from the error and provides contextual hints for fixing common issues.
-       * @param {Error} error - The error object thrown by JSON.parse()
-       * @param {string} jsonText - The raw JSON text that failed to parse
-       * @returns {string} HTML string containing the formatted error message
-       */
-      function createErrorMessage(error, jsonText) {
-        const errorMsg = error.message;
-        let lineNumber = null;
-        let columnNumber = null;
+        /**
+         * Creates a formatted HTML error message with detailed information about JSON parsing errors.
+         * Extracts line and column numbers from the error and provides contextual hints for fixing common issues.
+         * @param {Error} error - The error object thrown by JSON.parse()
+         * @param {string} jsonText - The raw JSON text that failed to parse
+         * @returns {string} HTML string containing the formatted error message
+         */
+        function createErrorMessage(error, jsonText) {
+          const errorMsg = error.message;
+          let lineNumber = null;
+          let columnNumber = null;
 
-        // Try to extract position from error message
-        const positionMatch = errorMsg.match(/position (\d+)/i);
-        if (positionMatch) {
-          const position = parseInt(positionMatch[1]);
-          const lines = jsonText.substring(0, position).split("\n");
-          lineNumber = lines.length;
-          columnNumber = lines[lines.length - 1].length + 1;
-        }
+          // Try to extract position from error message
+          const positionMatch = errorMsg.match(/position (\d+)/i);
+          if (positionMatch) {
+            const position = parseInt(positionMatch[1]);
+            const lines = jsonText.substring(0, position).split("\n");
+            lineNumber = lines.length;
+            columnNumber = lines[lines.length - 1].length + 1;
+          }
 
-        // Common JSON error hints
-        const hints = getErrorHints(errorMsg);
+          // Common JSON error hints
+          const hints = getErrorHints(errorMsg);
 
-        let html = '<div class="error-message">';
-        html += '<div class="error-title">❌ JSON Parse Error</div>';
-        html += `<div class="error-details"><strong>Message:</strong> ${escapeHtml(errorMsg)}</div>`;
+          let html = '<div class="error-message">';
+          html += '<div class="error-title">❌ JSON Parse Error</div>';
+          html += `<div class="error-details"><strong>Message:</strong> ${escapeHtml(errorMsg)}</div>`;
 
-        if (lineNumber && columnNumber) {
-          html += `<div class="error-details"><span class="error-position">📍 Location:</span> Line ${lineNumber}, Column ${columnNumber}</div>`;
-          highlightErrorLine(lineNumber);
-        }
+          if (lineNumber && columnNumber) {
+            html += `<div class="error-details"><span class="error-position">📍 Location:</span> Line ${lineNumber}, Column ${columnNumber}</div>`;
+            highlightErrorLine(lineNumber);
+          }
 
-        if (hints.length > 0) {
-          html += '<div class="error-hint">';
-          html += '<div class="error-hint-title">💡 Common fixes:</div>';
-          html += "<ul>";
-          hints.forEach((hint) => {
-            html += `<li>${escapeHtml(hint)}</li>`;
-          });
-          html += "</ul>";
+          if (hints.length > 0) {
+            html += '<div class="error-hint">';
+            html += '<div class="error-hint-title">💡 Common fixes:</div>';
+            html += "<ul>";
+            hints.forEach((hint) => {
+              html += `<li>${escapeHtml(hint)}</li>`;
+            });
+            html += "</ul>";
+            html += "</div>";
+          }
+
           html += "</div>";
+          return html;
         }
 
-        html += "</div>";
-        return html;
-      }
+        /**
+         * Analyses a JSON parsing error message and returns an array of helpful hints for fixing the issue.
+         * Provides context-specific suggestions based on the type of error encountered.
+         * @param {string} errorMsg - The error message from JSON.parse()
+         * @returns {string[]} Array of hint strings to help users fix the JSON syntax error
+         */
+        function getErrorHints(errorMsg) {
+          const hints = [];
+          const lowerMsg = errorMsg.toLowerCase();
 
-      /**
-       * Analyses a JSON parsing error message and returns an array of helpful hints for fixing the issue.
-       * Provides context-specific suggestions based on the type of error encountered.
-       * @param {string} errorMsg - The error message from JSON.parse()
-       * @returns {string[]} Array of hint strings to help users fix the JSON syntax error
-       */
-      function getErrorHints(errorMsg) {
-        const hints = [];
-        const lowerMsg = errorMsg.toLowerCase();
+          if (
+            lowerMsg.includes("unexpected token") ||
+            lowerMsg.includes("unexpected string")
+          ) {
+            hints.push("Check for missing commas between properties");
+            hints.push("Ensure all property names are in double quotes");
+            hints.push("Look for trailing commas (not allowed in JSON)");
+          }
 
-        if (
-          lowerMsg.includes("unexpected token") ||
-          lowerMsg.includes("unexpected string")
-        ) {
-          hints.push("Check for missing commas between properties");
-          hints.push("Ensure all property names are in double quotes");
-          hints.push("Look for trailing commas (not allowed in JSON)");
+          if (lowerMsg.includes("unexpected end")) {
+            hints.push("Check for unclosed braces { } or brackets [ ]");
+            hints.push(
+              "Verify all strings are properly closed with double quotes"
+            );
+          }
+
+          if (lowerMsg.includes("'")) {
+            hints.push("Use double quotes (\") instead of single quotes (')");
+          }
+
+          if (lowerMsg.includes("token")) {
+            hints.push("Remove any comments (JSON doesn't support comments)");
+            hints.push("Check for special characters that need escaping");
+          }
+
+          // Generic helpful hints
+          hints.push("Try using an online JSON validator for complex errors");
+          hints.push("Use the Format button once JSON is valid to beautify it");
+
+          return hints;
         }
 
-        if (lowerMsg.includes("unexpected end")) {
-          hints.push("Check for unclosed braces { } or brackets [ ]");
-          hints.push(
-            "Verify all strings are properly closed with double quotes"
-          );
+        /**
+         * Scrolls the JSON input textarea to highlight the line where a parsing error occurred.
+         * @param {number} lineNumber - The line number (1-indexed) where the error was detected
+         */
+        function highlightErrorLine(lineNumber) {
+          const lines = jsonInput.value.split("\n");
+          const lineHeight = 1.5; // matches CSS line-height
+          const fontSize = 13; // approximate font size
+          const scrollPosition = (lineNumber - 1) * (fontSize * lineHeight);
+
+          // Scroll to the error line
+          setTimeout(() => {
+            jsonInput.scrollTop = scrollPosition - 50;
+          }, 100);
         }
 
-        if (lowerMsg.includes("'")) {
-          hints.push("Use double quotes (\") instead of single quotes (')");
+        /**
+         * Escapes HTML special characters in text to prevent XSS and ensure proper rendering.
+         * @param {string} text - The text to escape
+         * @returns {string} HTML-safe escaped text
+         */
+        function escapeHtml(text) {
+          const div = document.createElement("div");
+          div.textContent = text;
+          return div.innerHTML;
         }
 
-        if (lowerMsg.includes("token")) {
-          hints.push("Remove any comments (JSON doesn't support comments)");
-          hints.push("Check for special characters that need escaping");
-        }
+        formatJsonBtn.addEventListener("click", () => {
+          try {
+            const json = JSON.parse(jsonInput.value);
+            jsonInput.value = JSON.stringify(json, null, 2);
+            localStorage.setItem(STORAGE_KEY, jsonInput.value);
+            updateJsonView();
+          } catch (e) {
+            console.error("Invalid JSON for formatting:", e);
+            jsonTree.innerHTML = createErrorMessage(e, jsonInput.value);
+            jsonInput.classList.add("error");
+          }
+        });
 
-        // Generic helpful hints
-        hints.push("Try using an online JSON validator for complex errors");
-        hints.push("Use the Format button once JSON is valid to beautify it");
-
-        return hints;
-      }
-
-      /**
-       * Scrolls the JSON input textarea to highlight the line where a parsing error occurred.
-       * @param {number} lineNumber - The line number (1-indexed) where the error was detected
-       */
-      function highlightErrorLine(lineNumber) {
-        const lines = jsonInput.value.split("\n");
-        const lineHeight = 1.5; // matches CSS line-height
-        const fontSize = 13; // approximate font size
-        const scrollPosition = (lineNumber - 1) * (fontSize * lineHeight);
-
-        // Scroll to the error line
-        setTimeout(() => {
-          jsonInput.scrollTop = scrollPosition - 50;
-        }, 100);
-      }
-
-      /**
-       * Escapes HTML special characters in text to prevent XSS and ensure proper rendering.
-       * @param {string} text - The text to escape
-       * @returns {string} HTML-safe escaped text
-       */
-      function escapeHtml(text) {
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-      }
-
-      formatJsonBtn.addEventListener("click", () => {
-        try {
-          const json = JSON.parse(jsonInput.value);
-          jsonInput.value = JSON.stringify(json, null, 2);
+        jsonInput.addEventListener("keyup", () => {
+          // Save to localStorage whenever input changes
           localStorage.setItem(STORAGE_KEY, jsonInput.value);
           updateJsonView();
-        } catch (e) {
-          console.error("Invalid JSON for formatting:", e);
-          jsonTree.innerHTML = createErrorMessage(e, jsonInput.value);
-          jsonInput.classList.add("error");
-        }
-      });
+        });
 
-      jsonInput.addEventListener("keyup", () => {
-        // Save to localStorage whenever input changes
-        localStorage.setItem(STORAGE_KEY, jsonInput.value);
-        updateJsonView();
-      });
-
-      searchInput.addEventListener("input", () => {
-        filterNodes(searchInput.value);
-        clearSearchBtn.classList.toggle(
-          "visible",
-          searchInput.value.length > 0
-        );
-      });
-
-      searchInput.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowDown") {
-          e.preventDefault();
-          navigateMatches(1);
-        } else if (e.key === "ArrowUp") {
-          e.preventDefault();
-          navigateMatches(-1);
-        } else if (e.key === "Escape") {
-          clearSearch();
-        }
-      });
-
-      clearSearchBtn.addEventListener("click", () => {
-        clearSearch();
-      });
-
-      /**
-       * Clears the search input field, removes all search highlighting, and resets the filter state.
-       */
-      function clearSearch() {
-        searchInput.value = "";
-        clearSearchBtn.classList.remove("visible");
-        filterNodes("");
-        searchInput.focus();
-      }
-
-      /**
-       * Navigates through matched search results in the specified direction.
-       * Updates highlighting and scrolls the current match into view.
-       * @param {number} direction - Direction to navigate: 1 for next, -1 for previous
-       */
-      function navigateMatches(direction) {
-        if (matchedNodes.length === 0) return;
-
-        if (currentMatchIndex >= 0 && currentMatchIndex < matchedNodes.length) {
-          matchedNodes[currentMatchIndex].classList.remove("current-match");
-        }
-
-        currentMatchIndex += direction;
-        if (currentMatchIndex >= matchedNodes.length) {
-          currentMatchIndex = 0;
-        } else if (currentMatchIndex < 0) {
-          currentMatchIndex = matchedNodes.length - 1;
-        }
-
-        const currentNode = matchedNodes[currentMatchIndex];
-        currentNode.classList.add("current-match");
-        currentNode.scrollIntoView({ behavior: "smooth", block: "center" });
-        pathText.textContent = `Path: ${currentNode.dataset.path}`;
-
-        updateMatchCounter();
-      }
-
-      /**
-       * Updates the match counter display to show the current match position out of total matches.
-       */
-      function updateMatchCounter() {
-        if (matchedNodes.length === 0) {
-          matchCounter.textContent = "";
-        } else {
-          matchCounter.textContent = `${currentMatchIndex + 1}/${matchedNodes.length}`;
-        }
-      }
-
-      /**
-       * Filters tree nodes based on a search term, showing only matching nodes and their parents.
-       * Highlights matches and automatically expands parent nodes to reveal matched children.
-       * @param {string} searchTerm - The search string to filter nodes by (searches keys, values, and paths)
-       */
-      function filterNodes(searchTerm) {
-        const nodes = document.querySelectorAll(".node");
-        const lowerSearchTerm = searchTerm.toLowerCase().trim();
-        matchedNodes = [];
-        currentMatchIndex = -1;
-
-        if (!lowerSearchTerm) {
-          nodes.forEach((node) => {
-            node.classList.remove("hidden", "highlight", "current-match");
-          });
-          updateMatchCounter();
-          return;
-        }
-
-        nodes.forEach((node) => {
-          const key = node.querySelector(".key")?.textContent || "";
-          const value = node.querySelector(".value")?.textContent || "";
-          const pathText = node.dataset.path || "";
-
-          const matches =
-            key.toLowerCase().includes(lowerSearchTerm) ||
-            value.toLowerCase().includes(lowerSearchTerm) ||
-            pathText.toLowerCase().includes(lowerSearchTerm);
-
-          if (matches) {
-            node.classList.remove("hidden");
-            node.classList.add("highlight");
-            matchedNodes.push(node);
-            expandParents(node);
+        searchInput.addEventListener("input", () => {
+          if (currentMode === "search") {
+            filterNodes(searchInput.value);
           } else {
-            node.classList.remove("highlight", "current-match");
-            // only check direct children instead of all descendants
-            const hasMatchingChild = Array.from(node.children).some((child) => {
-              if (child.tagName === "UL") {
-                return Array.from(child.children).some(
-                  (li) =>
-                    li.classList.contains("node") &&
-                    li.classList.contains("highlight")
-                );
-              }
-              return false;
-            });
+            executeQuery(searchInput.value);
+          }
+          clearSearchBtn.classList.toggle(
+            "visible",
+            searchInput.value.length > 0
+          );
+        });
 
-            if (!hasMatchingChild) {
-              node.classList.add("hidden");
-            } else {
-              node.classList.remove("hidden");
-              expandParents(node);
+        searchInput.addEventListener("keydown", (e) => {
+          if (currentMode === "search") {
+            if (e.key === "ArrowDown") {
+              e.preventDefault();
+              navigateMatches(1);
+            } else if (e.key === "ArrowUp") {
+              e.preventDefault();
+              navigateMatches(-1);
+            } else if (e.key === "Escape") {
+              clearSearch();
+            }
+          } else if (currentMode === "query") {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              executeQuery(searchInput.value);
+            } else if (e.key === "Escape") {
+              clearSearch();
             }
           }
         });
 
-        if (matchedNodes.length > 0) {
-          currentMatchIndex = 0;
-          matchedNodes[0].classList.add("current-match");
-          matchedNodes[0].scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-          });
-        }
+        clearSearchBtn.addEventListener("click", () => {
+          clearSearch();
+        });
 
-        updateMatchCounter();
-      }
+        searchModeBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log("Search mode clicked!");
+          console.log("searchModeBtn:", searchModeBtn);
+          console.log("queryModeBtn:", queryModeBtn);
+          currentMode = "search";
+          searchModeBtn.classList.add("active");
+          queryModeBtn.classList.remove("active");
+          searchInput.placeholder = "Search nodes (keys or values)...";
+          queryResults.classList.add("hidden");
+          clearSearch();
+          console.log(
+            "Search mode activated, classes:",
+            searchModeBtn.className
+          );
+        });
 
-      /**
-       * Recursively expands all parent nodes of a given node to make it visible in the tree.
-       * @param {HTMLElement} node - The DOM node whose parents should be expanded
-       */
-      function expandParents(node) {
-        let parent = node.parentElement;
-        while (parent) {
-          const parentNode = parent.closest(".node");
-          if (parentNode) {
-            parentNode.classList.add("open");
-            parentNode.classList.remove("hidden");
-            const toggle = parentNode.querySelector(":scope > .toggle");
-            if (toggle) {
-              toggle.textContent = "-";
-            }
-            parent = parentNode.parentElement;
+        queryModeBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log("Query mode clicked!");
+          console.log("searchModeBtn:", searchModeBtn);
+          console.log("queryModeBtn:", queryModeBtn);
+          currentMode = "query";
+          queryModeBtn.classList.add("active");
+          searchModeBtn.classList.remove("active");
+          searchInput.placeholder =
+            "Enter JSONPath query (e.g., $.items[?(@.price >= 12.99)])...";
+          clearSearch();
+          console.log("Query mode activated, classes:", queryModeBtn.className);
+          if (searchInput.value.trim()) {
+            executeQuery(searchInput.value);
+          }
+        });
+
+        /**
+         * Clears the search input field, removes all search highlighting, and resets the filter state.
+         */
+        function clearSearch() {
+          searchInput.value = "";
+          clearSearchBtn.classList.remove("visible");
+          if (currentMode === "search") {
+            filterNodes("");
           } else {
-            break;
+            queryResults.classList.add("hidden");
+            queryResults.innerHTML = "";
           }
+          searchInput.focus();
         }
-      }
 
-      /**
-       * Recursively creates an HTML tree view representation of a JSON object.
-       * Generates collapsible nodes for objects/arrays and displays primitive values with type styling.
-       * @param {*} obj - The JSON object or array to render
-       * @param {string} path - The JSONPath string representing the current location in the tree
-       * @returns {string} HTML string containing the tree structure
-       */
-      function createTreeView(obj, path) {
-        let html = "<ul>";
-        for (const key in obj) {
-          if (obj.hasOwnProperty(key)) {
-            const newPath = Array.isArray(obj)
-              ? `${path}[${key}]`
-              : `${path}.${key}`;
-            const isObject = typeof obj[key] === "object" && obj[key] !== null;
+        /**
+         * Executes a JSONPath query against the parsed JSON and displays the results.
+         * Validates that the query is compatible with the Apex library's capabilities.
+         * @param {string} query - The JSONPath query expression to execute
+         */
+        function executeQuery(query) {
+          const trimmedQuery = query.trim();
 
-            html += `<li class="node" data-path="${newPath}">`;
-            if (isObject) {
-              html += '<span class="toggle">+</span>';
-            }
-            html += `<span class="key">${key}:</span> `;
-            if (isObject) {
-              html += createTreeView(obj[key], newPath);
-            } else {
-              const value = obj[key];
-              const valueType = value === null ? "null" : typeof value;
-              const displayValue = JSON.stringify(value);
-              html += `<span class="value ${valueType}">${displayValue}</span>`;
-            }
-            html += `<button class="copy-btn" title="Copy path">Copy</button>`;
-            html += "</li>";
+          if (!trimmedQuery) {
+            queryResults.classList.add("hidden");
+            queryResults.innerHTML = "";
+            return;
           }
-        }
-        html += "</ul>";
-        return html;
-      }
 
-      /**
-       * Attaches event listeners to all tree nodes for interactions (hover, toggle, copy).
-       * Handles mouseover to display paths, toggle clicks for expand/collapse, and copy button functionality.
-       */
-      function addEventListeners() {
-        const nodes = document.querySelectorAll(".node");
-        nodes.forEach((node) => {
-          node.addEventListener("mouseover", (event) => {
-            event.stopPropagation();
-            pathText.textContent = `Path: ${node.dataset.path}`;
-          });
+          try {
+            const json = JSON.parse(jsonInput.value);
 
-          const toggle = node.querySelector(".toggle");
-          if (toggle) {
-            toggle.addEventListener("click", (event) => {
-              event.stopPropagation();
-              node.classList.toggle("open");
-              toggle.textContent = node.classList.contains("open") ? "-" : "+";
+            const unsupportedFeatures = checkUnsupportedFeatures(trimmedQuery);
+            if (unsupportedFeatures) {
+              displayQueryError(unsupportedFeatures);
+              return;
+            }
+
+            const results = JSONPath.JSONPath({
+              path: trimmedQuery,
+              json: json
             });
+            displayQueryResults(trimmedQuery, results);
+          } catch (e) {
+            if (e.message && e.message.includes("JSON")) {
+              displayQueryError(
+                "Invalid JSON input. Please fix the JSON before running queries."
+              );
+            } else {
+              displayQueryError(`Query error: ${e.message}`);
+            }
+          }
+        }
+
+        /**
+         * Checks if a JSONPath query contains features unsupported by the Apex library.
+         * @param {string} query - The JSONPath query to validate
+         * @returns {string|null} Error message if unsupported features found, null otherwise
+         */
+        function checkUnsupportedFeatures(query) {
+          if (query.includes("&&") || query.includes("||")) {
+            return "Complex filter logic (&&, ||) is not supported in the Apex library. Please use simple filters and chain them in Apex code.";
           }
 
-          const copyBtn = node.querySelector(".copy-btn");
+          if (query.match(/\(.*\)/)) {
+            if (!query.includes("[?(") && !query.includes("[*(")) {
+              return "Script expressions (...) are not supported in the Apex library for security reasons.";
+            }
+          }
+
+          if (query.match(/\.(length|avg|sum|min|max|match)\(/)) {
+            return "JSONPath functions (.length(), .avg(), etc.) are not supported in the Apex library. Use Apex methods after retrieving data.";
+          }
+
+          return null;
+        }
+
+        /**
+         * Displays query results with formatted output and Apex code snippet.
+         * @param {string} query - The executed query
+         * @param {Array} results - The query results
+         */
+        function displayQueryResults(query, results) {
+          queryResults.classList.remove("hidden");
+
+          let html = '<div class="query-results-header">✓ Query Results</div>';
+          html += '<div class="query-results-content">';
+          html += JSON.stringify(results, null, 2);
+          html += "</div>";
+
+          html += generateApexSnippet(query, results);
+
+          queryResults.innerHTML = html;
+
+          const copyBtn = queryResults.querySelector(".copy-apex-btn");
           if (copyBtn) {
-            copyBtn.addEventListener("click", (event) => {
-              event.stopPropagation();
-              const path = node.dataset.path;
+            copyBtn.addEventListener("click", () => {
+              const apexCode = copyBtn.dataset.code;
               navigator.clipboard
-                .writeText(path)
+                .writeText(apexCode)
                 .then(() => {
                   copyBtn.textContent = "Copied!";
                   copyBtn.classList.add("copied");
                   setTimeout(() => {
-                    copyBtn.textContent = "Copy";
+                    copyBtn.textContent = "Copy Apex Code";
                     copyBtn.classList.remove("copied");
-                  }, 1500);
+                  }, 2000);
                 })
                 .catch((err) => {
                   console.error("Failed to copy:", err);
-                  copyBtn.textContent = "Failed";
-                  setTimeout(() => {
-                    copyBtn.textContent = "Copy";
-                  }, 1500);
                 });
             });
           }
-        });
-      }
+        }
 
-      document.addEventListener("DOMContentLoaded", () => {
+        /**
+         * Displays an error message in the query results panel.
+         * @param {string} errorMessage - The error message to display
+         */
+        function displayQueryError(errorMessage) {
+          queryResults.classList.remove("hidden");
+          queryResults.innerHTML = `<div class="query-error">❌ ${escapeHtml(errorMessage)}</div>`;
+        }
+
+        /**
+         * Generates Apex code snippet for the given JSONPath query.
+         * @param {string} query - The JSONPath query
+         * @param {Array} results - The query results (used to determine return type)
+         * @returns {string} HTML string containing the Apex code snippet
+         */
+        function generateApexSnippet(query, results) {
+          const resultType =
+            Array.isArray(results) && results.length > 0
+              ? typeof results[0] === "object"
+                ? "List<Object>"
+                : "List<Object>"
+              : "List<Object>";
+
+          const apexCode = `String jsonString = '...';\nJPath path = new JPath(jsonString);\n\n${resultType} results = (${resultType}) path.select('${query.replace(/'/g, "\\'")}');\n// Returns: ${JSON.stringify(results).substring(0, 100)}${JSON.stringify(results).length > 100 ? "..." : ""}`;
+
+          let html = '<div class="apex-code-snippet">';
+          html +=
+            '<div class="apex-code-header">Apex Code (for apex-jpath library):</div>';
+          html += '<pre class="apex-code">' + escapeHtml(apexCode) + "</pre>";
+          html += `<button class="copy-apex-btn" data-code="${escapeHtml(apexCode)}">Copy Apex Code</button>`;
+          html += "</div>";
+
+          return html;
+        }
+
+        /**
+         * Navigates through matched search results in the specified direction.
+         * Updates highlighting and scrolls the current match into view.
+         * @param {number} direction - Direction to navigate: 1 for next, -1 for previous
+         */
+        function navigateMatches(direction) {
+          if (matchedNodes.length === 0) return;
+
+          if (
+            currentMatchIndex >= 0 &&
+            currentMatchIndex < matchedNodes.length
+          ) {
+            matchedNodes[currentMatchIndex].classList.remove("current-match");
+          }
+
+          currentMatchIndex += direction;
+          if (currentMatchIndex >= matchedNodes.length) {
+            currentMatchIndex = 0;
+          } else if (currentMatchIndex < 0) {
+            currentMatchIndex = matchedNodes.length - 1;
+          }
+
+          const currentNode = matchedNodes[currentMatchIndex];
+          currentNode.classList.add("current-match");
+          currentNode.scrollIntoView({ behavior: "smooth", block: "center" });
+          pathText.textContent = `Path: ${currentNode.dataset.path}`;
+
+          updateMatchCounter();
+        }
+
+        /**
+         * Updates the match counter display to show the current match position out of total matches.
+         */
+        function updateMatchCounter() {
+          if (matchedNodes.length === 0) {
+            matchCounter.textContent = "";
+          } else {
+            matchCounter.textContent = `${currentMatchIndex + 1}/${matchedNodes.length}`;
+          }
+        }
+
+        /**
+         * Filters tree nodes based on a search term, showing only matching nodes and their parents.
+         * Highlights matches and automatically expands parent nodes to reveal matched children.
+         * @param {string} searchTerm - The search string to filter nodes by (searches keys, values, and paths)
+         */
+        function filterNodes(searchTerm) {
+          const nodes = document.querySelectorAll(".node");
+          const lowerSearchTerm = searchTerm.toLowerCase().trim();
+          matchedNodes = [];
+          currentMatchIndex = -1;
+
+          if (!lowerSearchTerm) {
+            nodes.forEach((node) => {
+              node.classList.remove("hidden", "highlight", "current-match");
+            });
+            updateMatchCounter();
+            return;
+          }
+
+          nodes.forEach((node) => {
+            const key = node.querySelector(".key")?.textContent || "";
+            const value = node.querySelector(".value")?.textContent || "";
+            const pathText = node.dataset.path || "";
+
+            const matches =
+              key.toLowerCase().includes(lowerSearchTerm) ||
+              value.toLowerCase().includes(lowerSearchTerm) ||
+              pathText.toLowerCase().includes(lowerSearchTerm);
+
+            if (matches) {
+              node.classList.remove("hidden");
+              node.classList.add("highlight");
+              matchedNodes.push(node);
+              expandParents(node);
+            } else {
+              node.classList.remove("highlight", "current-match");
+              // only check direct children instead of all descendants
+              const hasMatchingChild = Array.from(node.children).some(
+                (child) => {
+                  if (child.tagName === "UL") {
+                    return Array.from(child.children).some(
+                      (li) =>
+                        li.classList.contains("node") &&
+                        li.classList.contains("highlight")
+                    );
+                  }
+                  return false;
+                }
+              );
+
+              if (!hasMatchingChild) {
+                node.classList.add("hidden");
+              } else {
+                node.classList.remove("hidden");
+                expandParents(node);
+              }
+            }
+          });
+
+          if (matchedNodes.length > 0) {
+            currentMatchIndex = 0;
+            matchedNodes[0].classList.add("current-match");
+            matchedNodes[0].scrollIntoView({
+              behavior: "smooth",
+              block: "center"
+            });
+          }
+
+          updateMatchCounter();
+        }
+
+        /**
+         * Recursively expands all parent nodes of a given node to make it visible in the tree.
+         * @param {HTMLElement} node - The DOM node whose parents should be expanded
+         */
+        function expandParents(node) {
+          let parent = node.parentElement;
+          while (parent) {
+            const parentNode = parent.closest(".node");
+            if (parentNode) {
+              parentNode.classList.add("open");
+              parentNode.classList.remove("hidden");
+              const toggle = parentNode.querySelector(":scope > .toggle");
+              if (toggle) {
+                toggle.textContent = "-";
+              }
+              parent = parentNode.parentElement;
+            } else {
+              break;
+            }
+          }
+        }
+
+        /**
+         * Recursively creates an HTML tree view representation of a JSON object.
+         * Generates collapsible nodes for objects/arrays and displays primitive values with type styling.
+         * @param {*} obj - The JSON object or array to render
+         * @param {string} path - The JSONPath string representing the current location in the tree
+         * @returns {string} HTML string containing the tree structure
+         */
+        function createTreeView(obj, path) {
+          let html = "<ul>";
+          for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+              const newPath = Array.isArray(obj)
+                ? `${path}[${key}]`
+                : `${path}.${key}`;
+              const isObject =
+                typeof obj[key] === "object" && obj[key] !== null;
+
+              html += `<li class="node" data-path="${newPath}">`;
+              if (isObject) {
+                html += '<span class="toggle">+</span>';
+              }
+              html += `<span class="key">${key}:</span> `;
+              if (isObject) {
+                html += createTreeView(obj[key], newPath);
+              } else {
+                const value = obj[key];
+                const valueType = value === null ? "null" : typeof value;
+                const displayValue = JSON.stringify(value);
+                html += `<span class="value ${valueType}">${displayValue}</span>`;
+              }
+              html += `<button class="copy-btn" title="Copy path">Copy</button>`;
+              html += "</li>";
+            }
+          }
+          html += "</ul>";
+          return html;
+        }
+
+        /**
+         * Attaches event listeners to all tree nodes for interactions (hover, toggle, copy).
+         * Handles mouseover to display paths, toggle clicks for expand/collapse, and copy button functionality.
+         */
+        function addEventListeners() {
+          const nodes = document.querySelectorAll(".node");
+          nodes.forEach((node) => {
+            node.addEventListener("mouseover", (event) => {
+              event.stopPropagation();
+              pathText.textContent = `Path: ${node.dataset.path}`;
+            });
+
+            const toggle = node.querySelector(".toggle");
+            if (toggle) {
+              toggle.addEventListener("click", (event) => {
+                event.stopPropagation();
+                node.classList.toggle("open");
+                toggle.textContent = node.classList.contains("open")
+                  ? "-"
+                  : "+";
+              });
+            }
+
+            const copyBtn = node.querySelector(".copy-btn");
+            if (copyBtn) {
+              copyBtn.addEventListener("click", (event) => {
+                event.stopPropagation();
+                const path = node.dataset.path;
+                navigator.clipboard
+                  .writeText(path)
+                  .then(() => {
+                    copyBtn.textContent = "Copied!";
+                    copyBtn.classList.add("copied");
+                    setTimeout(() => {
+                      copyBtn.textContent = "Copy";
+                      copyBtn.classList.remove("copied");
+                    }, 1500);
+                  })
+                  .catch((err) => {
+                    console.error("Failed to copy:", err);
+                    copyBtn.textContent = "Failed";
+                    setTimeout(() => {
+                      copyBtn.textContent = "Copy";
+                    }, 1500);
+                  });
+              });
+            }
+          });
+        }
+
         const formatButton = document.getElementById("format-json-btn");
         if (formatButton) {
           formatButton.click();
