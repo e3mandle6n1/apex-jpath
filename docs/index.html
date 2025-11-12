@@ -324,7 +324,7 @@
 
       #json-tree {
         padding-left: 20px;
-        font-family: "Courier New", Courier, monospace;
+        font-family: "Courier New", monospace;
       }
 
       .node {
@@ -486,101 +486,22 @@
           <h2>JSON Input</h2>
           <button id="format-json-btn">Format</button>
         </div>
-        <textarea id="json-input" placeholder="Paste your JSON here...">
+        <textarea
+          id="json-input"
+          placeholder='{
+  "items": [
+    {"name": "A", "price": "12.99"},
+    {"name": "B", "price": 12.99},
+    {"name": "C", "price": 8}
+  ]
+}'
+        >
 {
-                "creator": {
-                    "name": "Emandleni M",
-                    "tagline": "Building the tools I wish I had for others to use and love.",
-                    "links": {
-                    "github": "https://github.com/e3mandle6n1",
-                    "twitter": "https://twitter.com/e3mandle6ni",
-                    "trailblazer": "https://trailblazer.me/id/justemandleni",
-                    "linkedIn": "https://linkedin.com/in/emandleni-m-994240201/"
-                    }
-                },
-                "techProfile": {
-                    "status": "Currently experimenting with Salesforce DX tooling and event-driven patterns.",
-                    "primaryStack": {
-                    "languages": [
-                        { "name": "Apex", "proficiency": "Expert", "focus": "Primary" },
-                        { "name": "JavaScript", "proficiency": "Advanced", "focus": "Primary" },
-                        { "name": "TypeScript", "proficiency": "Advanced", "focus": "Primary" },
-                        { "name": "Python", "proficiency": "Intermediate", "focus": "Secondary" },
-                        { "name": "Java", "proficiency": "Intermediate", "focus": "Primary" },
-                        { "name": "C#", "proficiency": "Expert", "focus": "Secondary" }
-                    ],
-                    "frontend": [
-                        { "name": "Lightning Web Components (LWC)", "experience": "Expert" },
-                        { "name": "React", "experience": "Advanced" },
-                        { "name": "Vite", "experience": "Intermediate" }
-                    ],
-                    "backend": [
-                        { "name": "Node.js", "experience": "Advanced" },
-                        { "name": "FastAPI", "experience": "Intermediate" }
-                    ],
-                    "devops": [
-                        { "name": "GitHub Actions", "area": "CI/CD Automation" },
-                        { "name": "Docker", "area": "Containerization" },
-                        { "name": "Salesforce DX (sfDX)", "area": "Salesforce Tooling" },
-                        { "name": "GitLab CI", "area": "CI/CD Automation" },
-                        { "name": "Copado CLI", "area": "Salesforce DevOps" }
-                    ]
-                    },
-                    "specialties": [
-                    {
-                        "area": "Salesforce Development",
-                        "skills": ["Apex", "LWC", "Salesforce DX", "Unlocked Packages"]
-                    },
-                    {
-                        "area": "API Design & Systems Integration",
-                        "skills": ["REST", "SOAP", "GraphQL", "JSON/XML Parsing", "Webhook Integration"]
-                    },
-                    {
-                        "area": "DevOps & Automation",
-                        "skills": ["CI/CD Pipelines", "Automated Testing", "Infrastructure as Code (IaC) Principles"]
-                    },
-                    {
-                        "area": "System Architecture",
-                        "skills": ["Event-Driven Microservices", "Domain-Driven Design (DDD)"]
-                    }
-                    ]
-                },
-                "openSourceProjects": [
-                    {
-                    "id": "pj_001",
-                    "name": "apex-jpath",
-                    "description": "A native Apex implementation of JSONPath for querying JSON without full deserialization.",
-                    "url": "https://github.com/e3mandle6n1/apex-jpath",
-                    "isFeatured": true,
-                    "stats": { "stars": 204, "forks": 42, "watchers": 12, "openIssues": 3 },
-                    "technologies": ["Apex", "RegEx", "JavaScript"],
-                    "release": { "latestVersion": "v1.5.0", "packageId": "04t5p000000Gf3vAAC", "license": "MIT" }
-                    },
-                    {
-                    "id": "pj_002",
-                    "name": "apex-xpath",
-                    "description": "Planned: A native Apex XPath parser for complex XML document traversal.",
-                    "url": "",
-                    "isFeatured": false,
-                    "stats": { "stars": 5, "forks": 1, "watchers": 3, "openIssues": 1 },
-                    "technologies": ["Apex", "XML", "DOM"],
-                    "release": { "latestVersion": "v0.1.0-alpha", "packageId": null, "license": "MIT" }
-                    },
-                    {
-                    "id": "pj_003",
-                    "name": "x-x-equipment",
-                    "description": "Internal: x x x-x/x system.",
-                    "url": null,
-                    "isFeatured": false,
-                    "stats": null,
-                    "technologies": ["Python", "FastAPI", "React", "Docker"],
-                    "release": null
-                    }
-                ],
-                "meta": {
-                    "lastUpdated": "2025-11-11T10:32:30Z",
-                    "schemaVersion": "2.2-dev"
-                }
+  "items": [
+    {"name": "A", "price": "12.99"},
+    {"name": "B", "price": 12.99},
+    {"name": "C", "price": 8}
+  ]
 }</textarea
         >
       </div>
@@ -654,6 +575,18 @@
         const searchModeBtn = document.getElementById("search-mode-btn");
         const queryModeBtn = document.getElementById("query-mode-btn");
         const queryResults = document.getElementById("query-results");
+
+        // Set default query in the search input
+        searchInput.value = "$.items[?(@.price >= 12.99)]";
+        // Set Query mode as default
+        currentMode = "query";
+        queryModeBtn.classList.add("active");
+        searchModeBtn.classList.remove("active");
+        searchInput.placeholder =
+          "Enter JSONPath query (e.g., $.items[?(@.price >= 12.99)])...";
+        // Remove localStorage loading for first-time demo
+        updateJsonView(true);
+        executeQuery(searchInput.value);
 
         console.log("Elements found:", {
           jsonInput: !!jsonInput,
@@ -790,8 +723,8 @@
          */
         function highlightErrorLine(lineNumber) {
           const lines = jsonInput.value.split("\n");
-          const lineHeight = 1.5; // matches CSS line-height
-          const fontSize = 13; // approximate font size
+          const lineHeight = 1.5;
+          const fontSize = 13;
           const scrollPosition = (lineNumber - 1) * (fontSize * lineHeight);
 
           // Scroll to the error line
