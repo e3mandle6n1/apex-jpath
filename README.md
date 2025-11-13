@@ -423,15 +423,17 @@ This library is intentionally focused on the most common and essential JSONPath 
 
 By omitting features that rely on `eval()` or require highly complex, CPU-intensive parsing, the library remains secure and efficient, staying well within governor limits for all reasonable use cases. It provides a massive leap in functionality over parsing JSON manually with `JSON.deserializeUntyped` and nested loops, while avoiding the advanced edge cases that offer diminishing returns for their immense implementation cost and risk.
 
-## Testing
+## Testing 
 
-Run all tests using:
+All code in this repository is continuously tested using GitHub Actions. The test suite runs automatically on every push and pull request to ensure code quality and reliability.
 
-```bash
-sf force:apex:test:run -t JSONPathTest
-```
+The CI/CD pipeline:
+- Creates a fresh Salesforce scratch org
+- Deploys the `apex-jpath` library source code
+- Runs all Apex tests with code coverage
+- Reports pass/fail status via the badge at the top of the repo README
 
-<img width="843" height="547" alt="Screenshot 2025-10-04 at 16 42 10" src="https://github.com/user-attachments/assets/3c1601c8-717b-45a7-95db-fb8021c408c2" />
+You can view detailed test results and logs in the [Actions tab](https://github.com/e3mandle6n1/apex-jpath/actions).
 
 ## License
 
