@@ -88,7 +88,6 @@ Install this package using the following URL in your Salesforce sandbox org:
 - **Performance Optimized**: Efficient parsing and evaluation of JSONPath expressions
 
 ## JSONPath Finder Tool
-
 🔍 **Need help constructing JSONPath expressions?**
 
 Use the interactive <a href="https://e3mandle6n1.github.io/apex-jpath/" target="_blank" rel="noopener noreferrer">**JSONPath Finder Tool**</a> to:
@@ -97,6 +96,9 @@ Use the interactive <a href="https://e3mandle6n1.github.io/apex-jpath/" target="
 - **Navigate hierarchically** through nested objects and arrays
 - **Copy paths with one click** - hover over any node and click "Copy"
 - **Avoid syntax errors** - get the exact path you need
+
+<img width="1672" height="983" alt="Screenshot 2025-11-13 at 18 34 26" src="https://github.com/user-attachments/assets/3293c000-fcef-43bf-ac37-04981f3d0069" />
+<img width="1674" height="979" alt="Screenshot 2025-11-13 at 18 35 15" src="https://github.com/user-attachments/assets/79e10c23-12de-4aee-9a6e-f8af7b4e49bf" />
 
 Perfect for:
 
