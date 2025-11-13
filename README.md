@@ -433,7 +433,7 @@ The CI/CD pipeline:
 - Runs all Apex tests with code coverage
 - Reports pass/fail status via the badge at the top of the repo README
 
-You can view detailed test results and logs in the [Actions tab](https://github.com/e3mandle6n1/apex-jpath/actions).
+You can view detailed test results and logs in the [Actions tab](https://github.com/e3mandle6n1/apex-jpath/actions/workflows/apex-tests.yml).
 
 ## License
 
