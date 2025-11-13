@@ -1,0 +1,37 @@
+name: Apex Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install @salesforce/cli --global
+          sf version
+
+      - name: Authenticate to Dev Hub
+        run: |
+          echo "${{ secrets.SFDX_AUTH_URL }}" > ./SFDX_AUTH_URL.txt
+          sf org login sfdx-url --sfdx-url-file ./SFDX_AUTH_URL.txt --set-default-dev-hub --alias devhub
+
+      - name: Create scratch org
+        run: sf org create scratch --definition-file config/project-scratch-def.json --alias test-org --set-default --duration-days 1
+
+      - name: Deploy source to scratch org
+        run: sf project deploy start --source-dir force-app
+
+      - name: Run Apex tests
+        run: sf apex run test --test-level RunLocalTests --code-coverage --result-format human --wait 10
+
+      - name: Delete scratch org
+        if: always()
+        run: sf org delete scratch --target-org test-org --no-prompt
