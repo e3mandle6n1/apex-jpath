@@ -468,3 +468,5 @@ MIT License
 ## Support
 
 Questions and feature requests? Please use the [Discussions tab](https://github.com/e3mandle6n1/apex-jpath/discussions). For bugs, open an issue.
+
+All proceeds from this project support coding education for kids in Africa. Check out [Tangible Africa](https://tangible.levafoundation.org/).
