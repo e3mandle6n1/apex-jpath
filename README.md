@@ -98,6 +98,9 @@ Use the interactive <a href="https://e3mandle6n1.github.io/apex-jpath/" target="
 - **Copy paths with one click** - hover over any node and click "Copy"
 - **Avoid syntax errors** - get the exact path you need
 
+<img width="1672" height="983" alt="Screenshot 2025-11-13 at 18 34 26" src="https://github.com/user-attachments/assets/3293c000-fcef-43bf-ac37-04981f3d0069" />
+<img width="1674" height="979" alt="Screenshot 2025-11-13 at 18 35 15" src="https://github.com/user-attachments/assets/79e10c23-12de-4aee-9a6e-f8af7b4e49bf" />
+
 Perfect for:
 
 - Building complex queries for deeply nested JSONfeat(v0.2): enhance core library, add interactive JSONPath Finder tool, and improve docs
@@ -425,13 +428,16 @@ By omitting features that rely on `eval()` or require highly complex, CPU-intens
 
 ## Testing
 
-Run all tests using:
+All code in this repository is continuously tested using GitHub Actions. The test suite runs automatically on every push and pull request to ensure code quality and reliability.
 
-```bash
-sf force:apex:test:run -t JSONPathTest
-```
+The CI/CD pipeline:
 
-<img width="843" height="547" alt="Screenshot 2025-10-04 at 16 42 10" src="https://github.com/user-attachments/assets/3c1601c8-717b-45a7-95db-fb8021c408c2" />
+- Creates a fresh Salesforce scratch org
+- Deploys the `apex-jpath` library source code
+- Runs all Apex tests with code coverage
+- Reports pass/fail status via the badge at the top of the repo README
+
+You can view detailed test results and logs in the [Actions tab](https://github.com/e3mandle6n1/apex-jpath/actions/workflows/apex-tests.yml).
 
 ## License
 
