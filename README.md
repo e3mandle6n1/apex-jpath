@@ -1,4 +1,18 @@
-# Salesforce Apex JPath Library
+# Salesforce Apex JPath
+
+## Query Complex JSON in Apex... *Simply.*
+
+> **The essential utility for seamless data traversal, powered by an intuitive JPath subset.**
+
+---
+### Why Use apex-jpath?
+* **Simplify Parsing:** Stop writing complex, multi-level Apex loops.
+* **Intuitive Syntax:** Use familiar JPath syntax to retrieve values quickly.
+* **High Performance:** Efficiently query any JSON structure directly in your Salesforce environment.
+
+### 🎁 Bonus Tool: Interactive JPath Finder
+* **Visualise & Generate Code:** Use our **free, intuitive, interactive JPath finder tool** to visualise messy payloads, evaluate your queries, and generate sample Apex code you can copy and paste directly into your project.
+  * [Try the JPath Finder Now!](https://e3mandle6n1.github.io/apex-jpath/)
 
 In Apex, while `JSON.deserialize()` is effective for mapping JSON to strongly-typed Apex objects, it requires a predefined class structure. For dynamic JSON or when you only need a few specific values from a large, complex structure, using `JSON.deserializeUntyped()` is the alternative. However, this often leads to verbose and hard-to-read code with multiple levels of casting and map lookups, a pattern often referred to as "map-string-object hell."
 
