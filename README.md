@@ -117,7 +117,7 @@ Use the interactive <a href="https://e3mandle6n1.github.io/apex-jpath/" target="
 
 Perfect for:
 
-- Building complex queries for deeply nested JSONfeat(v0.2): enhance core library, add interactive JSONPath Finder tool, and improve docs
+- Building complex queries for deeply nested JSON
 - Learning JSONPath syntax interactively
 - Quickly testing path expressions before using them in Apex
 
