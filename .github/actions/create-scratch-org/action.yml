@@ -1,0 +1,8 @@
+name: Create Scratch Org
+description: Create a one-day scratch org
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: sf org create scratch --definition-file config/project-scratch-def.json --alias test-org --set-default --duration-days 1

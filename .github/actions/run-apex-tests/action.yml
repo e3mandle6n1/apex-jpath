@@ -1,0 +1,8 @@
+name: Run Apex Tests
+description: Run local Apex tests with coverage
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: sf apex run test --test-level RunLocalTests --code-coverage --result-format human --wait 10

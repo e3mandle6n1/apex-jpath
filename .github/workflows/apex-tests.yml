@@ -14,24 +14,22 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Salesforce CLI
-        run: |
-          npm install @salesforce/cli --global
-          sf version
+        uses: ./.github/actions/install-salesforce-cli
 
       - name: Authenticate to Dev Hub
-        run: |
-          echo "${{ secrets.SFDX_AUTH_URL }}" > ./SFDX_AUTH_URL.txt
-          sf org login sfdx-url --sfdx-url-file ./SFDX_AUTH_URL.txt --set-default-dev-hub --alias devhub
+        uses: ./.github/actions/authenticate-devhub
+        with:
+          auth-url: ${{ secrets.SFDX_AUTH_URL }}
 
       - name: Create scratch org
-        run: sf org create scratch --definition-file config/project-scratch-def.json --alias test-org --set-default --duration-days 1
+        uses: ./.github/actions/create-scratch-org
 
       - name: Deploy source to scratch org
-        run: sf project deploy start --source-dir force-app
+        uses: ./.github/actions/deploy-source
 
       - name: Run Apex tests
-        run: sf apex run test --test-level RunLocalTests --code-coverage --result-format human --wait 10
+        uses: ./.github/actions/run-apex-tests
 
       - name: Delete scratch org
         if: always()
-        run: sf org delete scratch --target-org test-org --no-prompt
+        uses: ./.github/actions/delete-scratch-org
