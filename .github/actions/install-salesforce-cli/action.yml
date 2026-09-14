@@ -1,0 +1,10 @@
+name: Install Salesforce CLI
+description: Install Salesforce CLI
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        npm install @salesforce/cli --global
+        sf version

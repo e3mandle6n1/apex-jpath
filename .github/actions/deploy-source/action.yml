@@ -1,0 +1,8 @@
+name: Deploy Source
+description: Deploy force-app to the default org
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: sf project deploy start --source-dir force-app

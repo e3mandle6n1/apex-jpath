@@ -1,0 +1,16 @@
+name: Authenticate Dev Hub
+description: Authenticate to Dev Hub via SFDX auth URL
+
+inputs:
+  auth-url:
+    description: SFDX auth URL
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        echo "${{ inputs.auth-url }}" > ./SFDX_AUTH_URL.txt
+        sf org login sfdx-url --sfdx-url-file ./SFDX_AUTH_URL.txt --set-default-dev-hub --alias devhub
+        rm -f ./SFDX_AUTH_URL.txt

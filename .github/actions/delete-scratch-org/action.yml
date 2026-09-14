@@ -1,0 +1,8 @@
+name: Delete Scratch Org
+description: Delete the test scratch org
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: sf org delete scratch --target-org test-org --no-prompt
