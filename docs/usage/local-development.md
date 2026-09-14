@@ -43,4 +43,6 @@ results in a single block often hits CPU / heap / log limits. See
 
 GitHub Actions workflow [apex-tests.yml](../../.github/workflows/apex-tests.yml)
 authenticates a Dev Hub (`SFDX_AUTH_URL`), creates a one-day scratch org, deploys
-`force-app`, runs local Apex tests, then deletes the org.
+`force-app`, runs local Apex tests, then deletes the org. Steps live as
+composite actions under [`.github/actions/`](../../.github/actions/).
+
